@@ -1,5 +1,6 @@
 import "react-native-gesture-handler";
 import * as React from "react";
+import { Ionicons } from "@expo/vector-icons";
 
 import { StyleSheet, Text, View, Button } from "react-native";
 import { NavigationContainer } from "@react-navigation/native";
@@ -7,7 +8,8 @@ import { createNativeStackNavigator } from "@react-navigation/native-stack";
 
 import EntryListScreen from "./screens/EntryListScreen";
 import EntryDetailScreen from "./screens/EntryDetailScreen";
-import ScreenThree from "./screens/Screen3";
+
+import SectionSelectionScreen from "./screens/SectionSelectionScreen";
 
 const Stack = createNativeStackNavigator();
 
@@ -16,15 +18,29 @@ export default function App() {
     <NavigationContainer>
       <Stack.Navigator>
         <Stack.Screen
-          name="Start"
+          name="EntryListScreen"
           component={EntryListScreen}
-          options={({ navigation, route }) => ({
-            headerRight: () => <Button title="fred" />,
+          // options={({ navigation, route }) => ({
+          //   headerRight: () => <Button title="fred" />,
+          // })}
+        />
+
+        <Stack.Screen
+          name="Entry Detail"
+          component={EntryDetailScreen}
+          options={({ navigation }) => ({
+            headerLeft: () => (
+              <Ionicons
+                name="chevron-back-sharp"
+                size={24}
+                color="black"
+                onPress={() => navigation.popToTop()}
+              />
+            ),
           })}
         />
 
-        <Stack.Screen name="Entry Detail" component={EntryDetailScreen} />
-        <Stack.Screen name="Page Three" component={ScreenThree} />
+        <Stack.Screen name="Section" component={SectionSelectionScreen} />
       </Stack.Navigator>
     </NavigationContainer>
   );

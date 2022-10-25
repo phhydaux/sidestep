@@ -2,7 +2,7 @@ import * as React from "react";
 import { StatusBar } from "expo-status-bar";
 import { StyleSheet, View, Text } from "react-native";
 
-const ScreenThree = ({navigation}) => {
+const SectionSelectionScreen = ({navigation}) => {
   return (
     <View style={styles.container}>
       <Text>Hello World</Text>
@@ -12,7 +12,7 @@ const ScreenThree = ({navigation}) => {
   );
 };
 
-export default ScreenThree;
+export default SectionSelectionScreen;
 
 const styles = StyleSheet.create({
   container: {

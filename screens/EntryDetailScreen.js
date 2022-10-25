@@ -14,8 +14,14 @@ import {
   Gesture,
   Directions,
 } from "react-native-gesture-handler";
+import {getHeaderTitle} from '@react-navigation/elements';
+
+
 import Registry from "../dataStore/dataSource";
 import RiskLevelBadge from "../components/RiskLevelBadge";
+
+
+
 
 const EntryDetailScreen = ({ navigation, route }) => {
   var currentEntry = Registry.entries[route.params.entry];
