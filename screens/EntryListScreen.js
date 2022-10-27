@@ -1,6 +1,13 @@
 import * as React from "react";
 import { StatusBar } from "expo-status-bar";
-import { StyleSheet, View, Text, Button, ScrollView } from "react-native";
+import {
+  StyleSheet,
+  View,
+  Text,
+  Button,
+  ScrollView,
+  Pressable,
+} from "react-native";
 import { NavigationContext } from "@react-navigation/native";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import Registry from "../dataStore/dataSource";
@@ -19,33 +26,30 @@ const EntryListScreen = ({ navigation }) => {
   // probably the order they are recorded in the data store.  We will accept that as an
   // array of the internal entry reference numbers.
 
- let displayOrder = Registry.entries.map(({ InternalID }) => InternalID);
-  
-  //let displayOrder = [0,1,2,3];
-  
-  
+  //let displayOrder = Registry.entries.map(({ InternalID }) => InternalID);
 
-  var tap = displayOrder.map((entryNum) =>
-    Gesture.Tap().onStart(() => {
-      navigation.push("Entry Detail", { entry: entryNum });
-    })
-  );
+  let displayOrder = [0,3,1,2];
 
- 
+  // var tap = displayOrder.map((entryNum) =>
+  //   Gesture.Tap().onStart(() => {
+  //     navigation.push("Entry Detail", { entry: entryNum });
+  //   })
+  // );
 
   return (
     <SafeAreaView>
       <ScrollView>
-        {displayOrder.map((entryNum,index) => (
-          <GestureDetector gesture={tap[index]} key={entryNum}>
-            <View style={styles.card}>
-              <Text>
-                <EntrySummaryCard key={entryNum} currentEntryNum={entryNum} />
-              </Text>
-              <Text></Text>
-            </View>
-          </GestureDetector>
-          
+        {displayOrder.map((entryNum, index, dispOrder) => (
+          <View style={styles.card} key={entryNum}>
+            <Pressable
+              onPress={() =>
+                navigation.push("Entry Detail", { entry: entryNum, index: index, order: dispOrder })
+              }
+              key={entryNum}
+            >
+              <EntrySummaryCard key={entryNum} currentEntryNum={entryNum} />
+            </Pressable>
+          </View>
         ))}
       </ScrollView>
     </SafeAreaView>
@@ -64,7 +68,7 @@ const styles = StyleSheet.create({
   bar: {
     flex: 0,
     flexDirection: "row",
-    alignItems: "",
+
     paddingLeft: 5,
     paddingRight: 5,
     paddingBottom: 0,

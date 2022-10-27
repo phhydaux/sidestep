@@ -14,18 +14,17 @@ import {
   Gesture,
   Directions,
 } from "react-native-gesture-handler";
-import {getHeaderTitle} from '@react-navigation/elements';
-
+import { getHeaderTitle } from "@react-navigation/elements";
 
 import Registry from "../dataStore/dataSource";
 import RiskLevelBadge from "../components/RiskLevelBadge";
 
-
-
-
 const EntryDetailScreen = ({ navigation, route }) => {
   var currentEntry = Registry.entries[route.params.entry];
   var arrayLength = Registry.entries.length;
+  var displayOrder = route.params.order;
+  var thisIndex = route.params.index;
+
 
   //This is the screen that will display the details of the risk
   // It will be called for each risk with a different ID.
@@ -39,11 +38,13 @@ const EntryDetailScreen = ({ navigation, route }) => {
   const swipeLeft = Gesture.Fling()
     .direction(Directions.LEFT)
     .onStart(() => {
-      var nextEntryRef = currentEntry.InternalID + 1;
-      if (nextEntryRef == arrayLength) {
+      
+      
+      if (thisIndex  == displayOrder.length -1) {
         alert("end of list reached");
       } else {
-        navigation.push("Entry Detail", { entry: nextEntryRef });
+        var nextEntryRef = displayOrder[thisIndex + 1];
+        navigation.push("Entry Detail", { entry: nextEntryRef, index: thisIndex + 1, order: displayOrder });
       }
     });
 
@@ -106,11 +107,13 @@ const EntryDetailScreen = ({ navigation, route }) => {
               </Text>
             </View>
             <View
-            style={styles.separator}
-            lightColor="#eee"
-            darkColor="rgba(255,255,255,1)"
-          />
-          <View style={{height: 300}}><Text></Text></View>
+              style={styles.separator}
+              lightColor="#eee"
+              darkColor="rgba(255,255,255,1)"
+            />
+            <View style={{ height: 300 }}>
+              <Text></Text>
+            </View>
           </ScrollView>
         </SafeAreaView>
       </GestureDetector>
@@ -129,7 +132,7 @@ const styles = StyleSheet.create({
   bar: {
     flex: 0,
     flexDirection: "row",
-    alignItems: "",
+
     paddingLeft: 5,
     paddingRight: 5,
     paddingBottom: 0,
