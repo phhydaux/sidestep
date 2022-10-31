@@ -55,6 +55,18 @@ const Registry = {
         
         NextRev: "Feb 2021",
       },
+      {
+        InternalID: 3,
+        Title: "Imaginary Problem",
+        RiskLevel: "Low",
+        RiskID: "HL19",
+        Category: "Accident Hazards",
+        Outcome:
+          "This is what happens when you let an infinate group of monkeys loose with a typewriter.",
+          Controls: "Once upon a time there was a large rabbit.  Ill tell of the battle of Hastings, when one lad int concorrors ear said hey lets go put breeze up sazons.  ",
+        NextRev: "Feb 2021",
+        LastRev: "Sunday",
+      },
   ],
 };
 

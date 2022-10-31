@@ -28,8 +28,10 @@ const EntryListScreen = ({ navigation }) => {
 
   //let displayOrder = Registry.entries.map(({ InternalID }) => InternalID);
 
-  let displayOrder = [0,3,1,2];
-
+  let displayOrder = [0, 1, 2];
+console.log("List Start");
+console.log(navigation.getParent().getState());
+console.log("List End");
   // var tap = displayOrder.map((entryNum) =>
   //   Gesture.Tap().onStart(() => {
   //     navigation.push("Entry Detail", { entry: entryNum });
@@ -43,7 +45,11 @@ const EntryListScreen = ({ navigation }) => {
           <View style={styles.card} key={entryNum}>
             <Pressable
               onPress={() =>
-                navigation.push("Entry Detail", { entry: entryNum, index: index, order: dispOrder })
+                navigation.push("Entry Detail", {
+                  entry: entryNum,
+                  index: index,
+                  order: dispOrder,
+                })
               }
               key={entryNum}
             >
