@@ -29,9 +29,7 @@ const EntryListScreen = ({ navigation }) => {
   //let displayOrder = Registry.entries.map(({ InternalID }) => InternalID);
 
   let displayOrder = [0, 1, 2];
-console.log("List Start");
-console.log(navigation.getParent().getState());
-console.log("List End");
+
   // var tap = displayOrder.map((entryNum) =>
   //   Gesture.Tap().onStart(() => {
   //     navigation.push("Entry Detail", { entry: entryNum });

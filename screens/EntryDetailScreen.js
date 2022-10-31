@@ -1,10 +1,12 @@
 import * as React from "react";
 import { StatusBar } from "expo-status-bar";
+import { Ionicons } from "@expo/vector-icons";
 import {
   SafeAreaView,
   StyleSheet,
   View,
   Text,
+  Share,
   TextInput,
   Button,
 } from "react-native";
@@ -25,7 +27,6 @@ const EntryDetailScreen = ({ navigation, route }) => {
   var displayOrder = route.params.order;
   var thisIndex = route.params.index;
 
-
   //This is the screen that will display the details of the risk
   // It will be called for each risk with a different ID.
 
@@ -38,20 +39,22 @@ const EntryDetailScreen = ({ navigation, route }) => {
   const swipeLeft = Gesture.Fling()
     .direction(Directions.LEFT)
     .onStart(() => {
-      
-      
-      if (thisIndex  == displayOrder.length -1) {
+      if (thisIndex == displayOrder.length - 1) {
         alert("end of list reached");
       } else {
         var nextEntryRef = displayOrder[thisIndex + 1];
-        navigation.push("Entry Detail", { entry: nextEntryRef, index: thisIndex + 1, order: displayOrder });
+        navigation.push("Entry Detail", {
+          entry: nextEntryRef,
+          index: thisIndex + 1,
+          order: displayOrder,
+        });
       }
     });
 
   return (
     <GestureDetector gesture={swipeLeft}>
       <GestureDetector gesture={swipeRight}>
-        <SafeAreaView>
+        <SafeAreaView style={{ flex: 1 }}>
           <View
             style={styles.separator}
             lightColor="#eee"
@@ -111,10 +114,24 @@ const EntryDetailScreen = ({ navigation, route }) => {
               lightColor="#eee"
               darkColor="rgba(255,255,255,1)"
             />
+
             <View style={{ height: 300 }}>
               <Text></Text>
             </View>
           </ScrollView>
+          <View style={styles.navbar}>
+            <Ionicons name="ios-home-outline" size={25} color={"black"} on />
+            <Ionicons
+              name="share-outline"
+              size={25}
+              color={"black"}
+              onPress={() => {
+                ShareButton({ currentEntry });
+              }}
+            />
+            <Ionicons name="chatbubble-outline" size={25} color={"black"} />
+            <Ionicons name="ellipsis-horizontal" size={25} color={"black"} />
+          </View>
         </SafeAreaView>
       </GestureDetector>
     </GestureDetector>
@@ -122,12 +139,38 @@ const EntryDetailScreen = ({ navigation, route }) => {
 };
 export default EntryDetailScreen;
 
+const ShareButton = async ({ currentEntry }) => {
+  const shareMessage =
+    "Title: " + currentEntry.Title + "  RiskID: " + currentEntry.RiskID;
+  try {
+    const result = await Share.share({
+      message: shareMessage,
+    });
+    if (result.action === Share.sharedAction) {
+      if (result.activityType) {
+        // shared with activity type of result.activityType
+      } else {
+        // shared
+      }
+    } else if (result.action === Share.dismissedAction) {
+      // dismissed
+    }
+  } catch (error) {
+    alert(error.message);
+  }
+};
+
+
+
 const styles = StyleSheet.create({
   test: {
     paddingLeft: 0,
     backgroundColor: "#cccccc",
     height: 100,
     width: "100%",
+  },
+  badge: {
+    width: 110,
   },
   bar: {
     flex: 0,
@@ -147,6 +190,14 @@ const styles = StyleSheet.create({
     height: 20,
     flex: 1,
     borderBottomWidth: 1,
+  },
+  navbar: {
+    backgroundColor: "wheat",
+    height: 50,
+    width: "100%",
+    flexDirection: "row",
+    justifyContent: "space-around",
+    alignItems: "center",
   },
   rightspace: {
     flex: 1,
@@ -205,12 +256,10 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
   },
   separator: {
-    height: 10,
+    height: 5,
     width: "100%",
-  },
 
-  badge: {
-    width: 110,
+    backgroundColor: "#dddddd",
   },
 
   label: {
