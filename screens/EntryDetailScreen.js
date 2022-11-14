@@ -26,6 +26,7 @@ const EntryDetailScreen = ({ navigation, route }) => {
   var arrayLength = Registry.entries.length;
   var displayOrder = route.params.order;
   var thisIndex = route.params.index;
+ 
 
   //This is the screen that will display the details of the risk
   // It will be called for each risk with a different ID.
@@ -57,8 +58,7 @@ const EntryDetailScreen = ({ navigation, route }) => {
         <SafeAreaView style={{ flex: 1 }}>
           <View
             style={styles.separator}
-            lightColor="#eee"
-            darkColor="rgba(255,255,255,1)"
+            
           />
           <View style={styles.test}>
             <View style={styles.toprow}>
@@ -74,8 +74,7 @@ const EntryDetailScreen = ({ navigation, route }) => {
           <ScrollView>
             <View
               style={styles.separator}
-              lightColor="#eee"
-              darkColor="rgba(255,255,255,1)"
+             
             />
             <View style={styles.bar}>
               <View style={styles.leftspace} />
@@ -192,7 +191,7 @@ const styles = StyleSheet.create({
     borderBottomWidth: 1,
   },
   navbar: {
-    backgroundColor: "wheat",
+    backgroundColor: "white",
     height: 50,
     width: "100%",
     flexDirection: "row",
@@ -259,7 +258,7 @@ const styles = StyleSheet.create({
     height: 5,
     width: "100%",
 
-    backgroundColor: "#dddddd",
+    backgroundColor: "#eee",
   },
 
   label: {

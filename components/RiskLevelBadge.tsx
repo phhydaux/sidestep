@@ -1,29 +1,30 @@
 import React from "react";
 import { StyleSheet , Text, View} from "react-native";
+import Registry from "../dataStore/dataSource";
 
-const RiskLevelBadge = ({ level }: { level: string }) => {
+const RiskLevelBadge = ({ level }: { level: number }) => {
   switch (level) {
-    case "High":
+    case 0:
       return (
         <View style={styles.bar}>
           <View style={styles.boxHigh}>
-            <Text style={styles.boxtext}>High</Text>
+            <Text style={styles.boxtext}>{Registry.metaData.RiskLevel[0]}</Text>
           </View>
         </View>
       );
-    case "Medium":
+    case 1:
       return (
         <View style={styles.bar}>
           <View style={styles.boxMed}>
-            <Text style={styles.boxtext}>Medium</Text>
+            <Text style={styles.boxtext}>{Registry.metaData.RiskLevel[1]}</Text>
           </View>
         </View>
       );
-    case "Low":
+    case 2:
       return (
         <View style={styles.bar}>
           <View style={styles.boxLow}>
-            <Text style={styles.boxtext}>Low</Text>
+            <Text style={styles.boxtext}>{Registry.metaData.RiskLevel[2]}</Text>
           </View>
         </View>
       );

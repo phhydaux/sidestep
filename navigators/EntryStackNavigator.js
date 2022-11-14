@@ -21,12 +21,31 @@ const Stack = createStackNavigator();
 
 export default function EntryStackNavigator() {
   return (
-    <Stack.Navigator>
-      <Stack.Screen
+    <Stack.Navigator initialRouteName="SectionSelectionScreen">
+      <Stack.Screen name="Section" component={SectionSelectionScreen} />
+       <Stack.Screen
         name="EntryListScreen"
         component={EntryListScreen}
+        options={{
+          headerShown: false,
+        }}
+        
+        
         // options={({ navigation, route }) => ({
-        //   headerRight: () => <Button title="fred" />,
+        //   title: "fred",
+        //   headerRight: () => (
+        //     <Ionicons
+        //       name="list"
+        //       size={24}
+        //       color="black"
+        //       onPress={() => navigation.push("EntryDetailScreen", {
+        //         entry: 1,
+        //         index: 1,
+        //         order: [0,1,2,3]  ,}
+        //       )}
+        //       style={{ paddingRight: 10 }}
+        //     />
+        //   ),
         // })}
       />
 
@@ -43,10 +62,8 @@ export default function EntryStackNavigator() {
             />
           ),
           cardStyleInterpolator: CardStyleInterpolators.forHorizontalIOS,
-        })}
-      />
-
-      <Stack.Screen name="Section" component={SectionSelectionScreen} />
+        })} 
+      /> 
     </Stack.Navigator>
   );
 }
