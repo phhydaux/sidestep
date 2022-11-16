@@ -6,25 +6,20 @@ import {
   View,
   Share,
   Text,
-  Button,
   ScrollView,
   Pressable,
-  Modal,
-  Alert,
 } from "react-native";
-import { NavigationContext } from "@react-navigation/native";
-import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import Registry from "../dataStore/dataSource";
 import { SafeAreaView } from "react-native-safe-area-context";
 import EntrySummaryCard from "../components/EntrySummaryCard";
-import { Gesture, GestureDetector } from "react-native-gesture-handler";
-import RadioButton from "../components/RadioButton";
 import SortOrderSelector from "../components/SortOrderSelector";
 
 const EntryListScreen = ({ navigation, route }) => {
   const [modalVisible, setModalVisible] = useState(false);
   const [option, setOption] = useState(null);
-  const [displayOrder, setDisplayOrder] = useState(Registry.entries.map(({ InternalID }) => InternalID));
+  const [displayOrder, setDisplayOrder] = useState(
+    Registry.entries.map(({ InternalID }) => InternalID)
+  );
 
   // if (route.params.modalVisible == 'true') setModalVisible('true');
   // This is the starting screen of my experiment.  This is going to be the list of risks
@@ -37,22 +32,19 @@ const EntryListScreen = ({ navigation, route }) => {
   // probably the order they are recorded in the data store.  We will accept that as an
   // array of the internal entry reference numbers.
 
-
-
   //let displayOrder = [0, 1, 2, 3];
 
-  
   return (
     <View style={{ flex: 1 }}>
       <StatusBar />
+      <Pressable onPress={()=>{navigation.pop()}} >
       <View style={styles.header}>
+      
         <Ionicons
           name="chevron-back-sharp"
           size={24}
           color="black"
-          onPress={() => {
-            navigation.pop();
-          }}
+        
           style={styles.leftButton}
         />
         <View style={styles.twoLinesTogether}>
@@ -72,25 +64,25 @@ const EntryListScreen = ({ navigation, route }) => {
           onPress={() => setModalVisible(true)}
           style={styles.rightButton}
         />
+        
       </View>
-      
-        <SortOrderSelector 
-          modalVisible = {modalVisible}
-          setModalVisible = {setModalVisible}
-          option = {option}
-          setOption = {setOption}
-          displayOrder = {displayOrder}
-          setDisplayOrder = {setDisplayOrder}
+      </Pressable>
 
-        />
-    
+      <SortOrderSelector
+        modalVisible={modalVisible}
+        setModalVisible={setModalVisible}
+        option={option}
+        setOption={setOption}
+        displayOrder={displayOrder}
+        setDisplayOrder={setDisplayOrder}
+      />
+
       <ScrollView>
         {displayOrder.map((entryNum, index, dispOrder) => (
           <View key={entryNum}>
             <Pressable
               onPress={() =>
-                navigation.push("Entry Detail", {
-                  entry: entryNum,
+                navigation.push("Entry Detail", {               
                   index: index,
                   order: dispOrder,
                 })
@@ -103,7 +95,10 @@ const EntryListScreen = ({ navigation, route }) => {
         ))}
       </ScrollView>
       <View>
-        <Text>Hello World: {option}xx{displayOrder[0]}+{displayOrder[1]}+{displayOrder[2]}: </Text>
+        <Text>
+          Hello World: {option}xx{displayOrder[0]}+{displayOrder[1]}+
+          {displayOrder[2]}:{" "}
+        </Text>
       </View>
 
       <View style={styles.navbar}>
@@ -186,8 +181,9 @@ const styles = StyleSheet.create({
   },
   header: {
     maxHeight: 80,
-    paddingTop: 35,
-    flex: 1,
+    paddingTop: 45,
+    padding: 10,
+    flex: 0,
     flexDirection: "row",
 
     alignItems: "center",

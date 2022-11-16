@@ -15,38 +15,25 @@ import EntryListScreen from "../screens/EntryListScreen";
 import EntryDetailScreen from "../screens/EntryDetailScreen";
 
 import SectionSelectionScreen from "../screens/SectionSelectionScreen";
-import { GestureHandlerRootView } from "react-native-gesture-handler";
 
 const Stack = createStackNavigator();
 
 export default function EntryStackNavigator() {
   return (
-    <Stack.Navigator initialRouteName="SectionSelectionScreen">
-      <Stack.Screen name="Section" component={SectionSelectionScreen} />
-       <Stack.Screen
+    <Stack.Navigator initialRouteName="Section">
+      <Stack.Screen
+        name="Section"
+        component={SectionSelectionScreen}
+        options={{
+          headerShown: false,
+        }}
+      />
+      <Stack.Screen
         name="EntryListScreen"
         component={EntryListScreen}
         options={{
           headerShown: false,
         }}
-        
-        
-        // options={({ navigation, route }) => ({
-        //   title: "fred",
-        //   headerRight: () => (
-        //     <Ionicons
-        //       name="list"
-        //       size={24}
-        //       color="black"
-        //       onPress={() => navigation.push("EntryDetailScreen", {
-        //         entry: 1,
-        //         index: 1,
-        //         order: [0,1,2,3]  ,}
-        //       )}
-        //       style={{ paddingRight: 10 }}
-        //     />
-        //   ),
-        // })}
       />
 
       <Stack.Screen
@@ -58,12 +45,12 @@ export default function EntryStackNavigator() {
               name="chevron-back-sharp"
               size={24}
               color="black"
-              onPress={() => navigation.popToTop()}
+              onPress={() => navigation.pop()}
             />
           ),
           cardStyleInterpolator: CardStyleInterpolators.forHorizontalIOS,
-        })} 
-      /> 
+        })}
+      />
     </Stack.Navigator>
   );
 }

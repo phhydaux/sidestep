@@ -1,146 +1,178 @@
-import * as React from "react";
-import { StatusBar } from "expo-status-bar";
+import React, { useRef, useState, useEffect } from "react";
 import { Ionicons } from "@expo/vector-icons";
 import {
   SafeAreaView,
+  ScrollView,
   StyleSheet,
+  FlatList,
   View,
   Text,
   Share,
-  TextInput,
-  Button,
+  useWindowDimensions,
 } from "react-native";
-import { ScrollView } from "react-native";
-import {
-  GestureDetector,
-  Gesture,
-  Directions,
-} from "react-native-gesture-handler";
-import { getHeaderTitle } from "@react-navigation/elements";
 
 import Registry from "../dataStore/dataSource";
 import RiskLevelBadge from "../components/RiskLevelBadge";
 
 const EntryDetailScreen = ({ navigation, route }) => {
-  var currentEntry = Registry.entries[route.params.entry];
-  var arrayLength = Registry.entries.length;
   var displayOrder = route.params.order;
-  var thisIndex = route.params.index;
- 
+  var startAt = route.params.index;
 
-  //This is the screen that will display the details of the risk
-  // It will be called for each risk with a different ID.
+  const entriesInOrder = displayOrder.map((value) => {
+    return Registry.entries[value];
+  });
 
-  const swipeRight = Gesture.Fling()
-    .direction(Directions.RIGHT)
-    .onStart(() => {
-      navigation.pop();
-    });
+  const displayedEntryID = useRef();
+  const [ref, setRef] = useState(null);
 
-  const swipeLeft = Gesture.Fling()
-    .direction(Directions.LEFT)
-    .onStart(() => {
-      if (thisIndex == displayOrder.length - 1) {
-        alert("end of list reached");
-      } else {
-        var nextEntryRef = displayOrder[thisIndex + 1];
-        navigation.push("Entry Detail", {
-          entry: nextEntryRef,
-          index: thisIndex + 1,
-          order: displayOrder,
-        });
-      }
-    });
+  // displayOrder:  Ordered array of the internalIDs to be displayed
+  // startAt: The index number in the displayOrder which should be the
+  //          first displayed entry.
+  // entriesInOrder: Array of entries in the order they should be displayed
+  // displayedEntryID: The InternalID number of the currently displayed entry
+  // ref: a reference to the FlatList object
 
-  return (
-    <GestureDetector gesture={swipeLeft}>
-      <GestureDetector gesture={swipeRight}>
-        <SafeAreaView style={{ flex: 1 }}>
+  const { width: windowWidth } = useWindowDimensions();
+
+  const onViewableItemsChanged = useRef(({ viewableItems, changed }) => {
+    displayedEntryID.current = viewableItems[0].item.InternalID;
+  });
+
+  // useEffect is used to move the scroll position to the item clicked on in the list
+  // the setTimeout is to defeat a race condition and ensure the scrollable list is
+  // mounted before the scrollToOffset is attempted.
+  useEffect(() => {
+    if (ref != null) {
+      var offset = windowWidth * startAt;
+      setTimeout(() => {
+        ref.scrollToOffset({ offset: offset, animated: false });
+      }, 0);
+    }
+  });
+
+  // the renderItem function is used by FlatList
+  const renderItem = ({ item }) => {
+    return (
+      <View style={{ width: windowWidth }} key={item.InternalID}>
+        {/* Header panel at the top of the screen */}
+        <View style={styles.toppanel}>
+          <View style={styles.toprow}>
+            <View style={styles.badge}>
+              <RiskLevelBadge level={item.RiskLevel} />
+            </View>
+            <Text style={styles.label}>{item.Title}</Text>
+          </View>
+          <View style={styles.secondrow}>
+            <Text style={styles.RefID}>Ref ID: {item.RiskID}</Text>
+          </View>
+        </View>
+
+        {/* Main Body of the Screen - scrolls vertically if too long */}
+
+        <ScrollView>
+          <View style={styles.separator} />
+          <View style={styles.bar}>
+            <View style={styles.leftspace} />
+            <View style={styles.tab}>
+              <Text>Outcome Description</Text>
+            </View>
+            <View style={styles.rightspace} />
+          </View>
+
+          <View style={styles.section}>
+            <Text style={styles.sectionOne}>{item.Outcome}</Text>
+          </View>
+
+          <View style={styles.bar}>
+            <View style={styles.leftspace} />
+            <View style={styles.tab}>
+              <Text>Controls in place</Text>
+            </View>
+            <View style={styles.rightspace} />
+          </View>
+
+          <View style={styles.section}>
+            <Text style={styles.sectionOne}>{item.Controls}</Text>
+          </View>
+          <View style={styles.section}>
+            <Text style={styles.sectionOne}>Last Review: {item.LastRev}</Text>
+            <Text> </Text>
+            <Text style={styles.sectionOne}>Next Review: {item.NextRev}</Text>
+          </View>
           <View
             style={styles.separator}
-            
+            lightColor="#eee"
+            darkColor="rgba(255,255,255,1)"
           />
-          <View style={styles.test}>
-            <View style={styles.toprow}>
-              <View style={styles.badge}>
-                <RiskLevelBadge level={currentEntry.RiskLevel} />
-              </View>
-              <Text style={styles.label}>{currentEntry.Title}</Text>
-            </View>
-            <View style={styles.secondrow}>
-              <Text style={styles.RefID}>Ref ID: {currentEntry.RiskID}</Text>
-            </View>
+
+          <View style={{ height: 300 }}>
+            <Text></Text>
           </View>
-          <ScrollView>
-            <View
-              style={styles.separator}
-             
-            />
-            <View style={styles.bar}>
-              <View style={styles.leftspace} />
-              <View style={styles.tab}>
-                <Text>Outcome Description</Text>
-              </View>
-              <View style={styles.rightspace} />
-            </View>
+        </ScrollView>
+      </View>
+    );
+  };
 
-            <View style={styles.section}>
-              <Text style={styles.sectionOne}>{currentEntry.Outcome}</Text>
-            </View>
+  return (
+    <SafeAreaView style={styles.container}>
+      <View style={styles.scrollContainer}>
+        <FlatList
+          horizontal={true}
+          data={entriesInOrder}
+          renderItem={renderItem}
+          keyExtractor={(item) => item.InternalID}
+          extraData={Registry}
+          pagingEnabled={true}
+          onViewableItemsChanged={onViewableItemsChanged.current}
+          viewabilityConfig={{ itemVisiblePercentThreshold: 50 }}
+          ref={(ref) => {
+            setRef(ref);
+          }}
+        />
+      </View>
 
-            <View style={styles.bar}>
-              <View style={styles.leftspace} />
-              <View style={styles.tab}>
-                <Text>Controls in place</Text>
-              </View>
-              <View style={styles.rightspace} />
-            </View>
-
-            <View style={styles.section}>
-              <Text style={styles.sectionOne}>{currentEntry.Controls}</Text>
-            </View>
-            <View style={styles.section}>
-              <Text style={styles.sectionOne}>
-                Last Review: {currentEntry.LastRev}
-              </Text>
-              <Text> </Text>
-              <Text style={styles.sectionOne}>
-                Next Review: {currentEntry.NextRev}
-              </Text>
-            </View>
-            <View
-              style={styles.separator}
-              lightColor="#eee"
-              darkColor="rgba(255,255,255,1)"
-            />
-
-            <View style={{ height: 300 }}>
-              <Text></Text>
-            </View>
-          </ScrollView>
-          <View style={styles.navbar}>
-            <Ionicons name="ios-home-outline" size={25} color={"black"} on />
-            <Ionicons
-              name="share-outline"
-              size={25}
-              color={"black"}
-              onPress={() => {
-                ShareButton({ currentEntry });
-              }}
-            />
-            <Ionicons name="chatbubble-outline" size={25} color={"black"} />
-            <Ionicons name="ellipsis-horizontal" size={25} color={"black"} />
-          </View>
-        </SafeAreaView>
-      </GestureDetector>
-    </GestureDetector>
+      {/* Bottom Navigation Bar */}
+      <View style={styles.navbar}>
+        <Ionicons
+          name="ios-home-outline"
+          size={25}
+          color={"black"}
+          onPress={() => navigation.popToTop()}
+        />
+        <Ionicons
+          name="share-outline"
+          size={25}
+          color={"black"}
+          onPress={() => {
+            ShareButton(
+              "Regarding: " +
+                Registry.entries[displayedEntryID.current].Title +
+                " Reference:" +
+                Registry.entries[displayedEntryID.current].RiskID
+            );
+          }}
+        />
+        <Ionicons
+          name="chatbubble-outline"
+          size={25}
+          color={"black"}
+          onPress={() => {
+            ref.scrollToOffset({
+              offset: 1050,
+              animated: true,
+            });
+          }}
+        />
+        <Ionicons name="ellipsis-horizontal" size={25} color={"black"} />
+      </View>
+    </SafeAreaView>
   );
 };
 export default EntryDetailScreen;
 
-const ShareButton = async ({ currentEntry }) => {
-  const shareMessage =
-    "Title: " + currentEntry.Title + "  RiskID: " + currentEntry.RiskID;
+const ShareButton = async (message) => {
+  const shareMessage = message;
+
   try {
     const result = await Share.share({
       message: shareMessage,
@@ -159,44 +191,50 @@ const ShareButton = async ({ currentEntry }) => {
   }
 };
 
-
-
 const styles = StyleSheet.create({
-  test: {
-    paddingLeft: 0,
-    backgroundColor: "#cccccc",
-    height: 100,
-    width: "100%",
-  },
   badge: {
     width: 110,
   },
   bar: {
     flex: 0,
     flexDirection: "row",
-
     paddingLeft: 5,
     paddingRight: 5,
     paddingBottom: 0,
     lineHeight: 10,
     minHeight: 0,
     borderBottomWidth: 0,
-
-    //maxWidth: 310,
+  },
+  container: {
+    flex: 1,
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  scrollContainer: {
+    flex: 1,
+    height: 300,
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  card: {
+    flex: 1,
+    marginVertical: 4,
+    marginHorizontal: 16,
+    borderRadius: 5,
+    overflow: "hidden",
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  label: {
+    flex: 1,
+    fontWeight: "bold",
+    paddingTop: 15,
   },
   leftspace: {
     maxWidth: 10,
     height: 20,
     flex: 1,
     borderBottomWidth: 1,
-  },
-  navbar: {
-    backgroundColor: "white",
-    height: 50,
-    width: "100%",
-    flexDirection: "row",
-    justifyContent: "space-around",
-    alignItems: "center",
   },
   rightspace: {
     flex: 1,
@@ -223,13 +261,10 @@ const styles = StyleSheet.create({
     borderBottomColor: "#000000",
     borderBottomWidth: 0,
   },
-  sectionTwo: {
-    borderRadius: 20,
-    paddingLeft: 15,
-  },
-  sectionThree: {
-    borderRadius: 20,
-    paddingLeft: 15,
+  separator: {
+    height: 5,
+    width: "100%",
+    backgroundColor: "#eee",
   },
   tab: {
     borderRadius: 10,
@@ -245,35 +280,48 @@ const styles = StyleSheet.create({
     marginBottom: 0,
     height: 20,
   },
-  container: {
-    flex: 1,
-    alignItems: "center",
-    justifyContent: "center",
+  textContainer: {
+    backgroundColor: "rgba(0,0,0, 0.7)",
+    paddingHorizontal: 24,
+    paddingVertical: 8,
+    borderRadius: 5,
   },
-  title: {
-    fontSize: 20,
-    fontWeight: "bold",
-  },
-  separator: {
-    height: 5,
+  toppanel: {
+    paddingLeft: 0,
+    backgroundColor: "#cccccc",
+    height: 100,
     width: "100%",
-
-    backgroundColor: "#eee",
   },
-
-  label: {
-    flex: 1,
-    fontWeight: "bold",
-    //numberOfLines: 2,
-    // ellipsizeMode: 'tail',
-    paddingTop: 15,
-  },
-
   toprow: {
     flex: 1,
     padding: 5,
     flexDirection: "row",
     justifyContent: "flex-start",
     alignItems: "stretch",
+  },
+  infoText: {
+    color: "white",
+    fontSize: 16,
+    fontWeight: "bold",
+  },
+  navbar: {
+    backgroundColor: "white",
+    height: 50,
+    width: "100%",
+    flexDirection: "row",
+    justifyContent: "space-around",
+    alignItems: "center",
+  },
+  normalDot: {
+    height: 8,
+    width: 8,
+    borderRadius: 4,
+    backgroundColor: "silver",
+    marginHorizontal: 4,
+  },
+  indicatorContainer: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "center",
   },
 });
