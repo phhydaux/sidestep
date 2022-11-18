@@ -9,6 +9,7 @@ import {
   Text,
   Share,
   useWindowDimensions,
+  Pressable,
 } from "react-native";
 
 import Registry from "../dataStore/dataSource";
@@ -16,7 +17,12 @@ import RiskLevelBadge from "../components/RiskLevelBadge";
 
 const EntryDetailScreen = ({ navigation, route }) => {
   var displayOrder = route.params.order;
-  var startAt = route.params.index;
+
+  // I put startAt in a ref because useEffect seems to fire whenever
+  // the footer is modified, forcing the scroll back to its initial
+  // position.  By changing startAt to the current position, when useEffect
+  // fires it does not affect the scroll postion.
+  var startAt = useRef(route.params.index);
 
   const entriesInOrder = displayOrder.map((value) => {
     return Registry.entries[value];
@@ -24,6 +30,9 @@ const EntryDetailScreen = ({ navigation, route }) => {
 
   const displayedEntryID = useRef();
   const [ref, setRef] = useState(null);
+
+  const [flag, setFlag] = useState("black");
+  const [noteModalVisible, setNoteModalVisible] = useState(false);
 
   // displayOrder:  Ordered array of the internalIDs to be displayed
   // startAt: The index number in the displayOrder which should be the
@@ -36,14 +45,25 @@ const EntryDetailScreen = ({ navigation, route }) => {
 
   const onViewableItemsChanged = useRef(({ viewableItems, changed }) => {
     displayedEntryID.current = viewableItems[0].item.InternalID;
+    startAt.current = displayedEntryID.current;
+    
   });
+
+const onMomentumScrollEnd = () =>  {
+    
+    if (displayedEntryID.current == 2) {
+      setFlag("red")
+    } else {
+      setFlag("black")
+    }
+  }
 
   // useEffect is used to move the scroll position to the item clicked on in the list
   // the setTimeout is to defeat a race condition and ensure the scrollable list is
   // mounted before the scrollToOffset is attempted.
   useEffect(() => {
     if (ref != null) {
-      var offset = windowWidth * startAt;
+      var offset = windowWidth * startAt.current;
       setTimeout(() => {
         ref.scrollToOffset({ offset: offset, animated: false });
       }, 0);
@@ -117,6 +137,8 @@ const EntryDetailScreen = ({ navigation, route }) => {
     <SafeAreaView style={styles.container}>
       <View style={styles.scrollContainer}>
         <FlatList
+        onMomentumScrollEnd={()=>onMomentumScrollEnd()}
+        
           horizontal={true}
           data={entriesInOrder}
           renderItem={renderItem}
@@ -124,7 +146,7 @@ const EntryDetailScreen = ({ navigation, route }) => {
           extraData={Registry}
           pagingEnabled={true}
           onViewableItemsChanged={onViewableItemsChanged.current}
-          viewabilityConfig={{ itemVisiblePercentThreshold: 50 }}
+          viewabilityConfig={{ itemVisiblePercentThreshold: 50, waitForInteraction: true }}
           ref={(ref) => {
             setRef(ref);
           }}
@@ -133,17 +155,19 @@ const EntryDetailScreen = ({ navigation, route }) => {
 
       {/* Bottom Navigation Bar */}
       <View style={styles.navbar}>
-        <Ionicons
-          name="ios-home-outline"
-          size={25}
-          color={"black"}
-          onPress={() => navigation.popToTop()}
-        />
-        <Ionicons
-          name="share-outline"
-          size={25}
-          color={"black"}
-          onPress={() => {
+      <Pressable onPress={() => navigation.popToTop()}>
+          <View style={{ alignItems: "center" }}>
+            <Ionicons name="ios-home-outline" size={25} color={"black"} on />
+            <Text>Home</Text>
+          </View>
+        </Pressable>
+        <View style={{ alignItems: "center" }}>
+          <Ionicons
+            name="share-outline"
+            size={25}
+            color={"black"}
+            onPress={() => {
+              //This needs to be the Registry/Category list
             ShareButton(
               "Regarding: " +
                 Registry.entries[displayedEntryID.current].Title +
@@ -151,20 +175,26 @@ const EntryDetailScreen = ({ navigation, route }) => {
                 Registry.entries[displayedEntryID.current].RiskID
             );
           }}
-        />
-        <Ionicons
-          name="chatbubble-outline"
-          size={25}
-          color={"black"}
-          onPress={() => {
-            ref.scrollToOffset({
-              offset: 1050,
-              animated: true,
-            });
-          }}
-        />
-        <Ionicons name="ellipsis-horizontal" size={25} color={"black"} />
+          />
+          <Text>Share</Text>
+        </View>
+        <Pressable onPress={() => { console.log(flag)}}>
+        <View style={{ alignItems: "center" }}>
+          <Ionicons name="chatbubble-outline" size={25} color={flag} />
+          <Text>Comment</Text>
+        </View>
+        </Pressable>
+
+        <View style={{ alignItems: "center" }}>
+          <Ionicons name="ellipsis-horizontal" size={25} color={"black"} />
+          <Text>{displayedEntryID.current}</Text>
+        </View>
+
+
+
+      
       </View>
+  
     </SafeAreaView>
   );
 };

@@ -3,12 +3,15 @@ import * as React from "react";
 import { NavigationContainer } from "@react-navigation/native";
 import EntryStackNavigator from "./navigators/EntryStackNavigator";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
+import HomePageNavigator from "./navigators/HomePageNavigator";
+
 
 export default function App() {
   return (
     <GestureHandlerRootView style={{ flex: 1 }}>
       <NavigationContainer>
-        <EntryStackNavigator />
+    
+        <HomePageNavigator />
       </NavigationContainer>
     </GestureHandlerRootView>
   );

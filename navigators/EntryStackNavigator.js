@@ -15,12 +15,21 @@ import EntryListScreen from "../screens/EntryListScreen";
 import EntryDetailScreen from "../screens/EntryDetailScreen";
 
 import SectionSelectionScreen from "../screens/SectionSelectionScreen";
+import HomeScreen from "../screens/HomeScreen";
 
 const Stack = createStackNavigator();
 
 export default function EntryStackNavigator() {
   return (
-    <Stack.Navigator initialRouteName="Section">
+    <Stack.Navigator initialRouteName="Home">
+    <Stack.Screen
+    name="Home"
+    component={HomeScreen}  
+    options={{
+          headerShown: false,
+        }}
+    />
+
       <Stack.Screen
         name="Section"
         component={SectionSelectionScreen}

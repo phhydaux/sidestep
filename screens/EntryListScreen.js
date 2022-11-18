@@ -94,12 +94,7 @@ const EntryListScreen = ({ navigation, route }) => {
           </View>
         ))}
       </ScrollView>
-      <View>
-        <Text>
-          Hello World: {option}xx{displayOrder[0]}+{displayOrder[1]}+
-          {displayOrder[2]}:{" "}
-        </Text>
-      </View>
+     
 
       <View style={styles.navbar}>
         <Pressable onPress={() => setModalVisible(true)}>
