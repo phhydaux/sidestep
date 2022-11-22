@@ -21,7 +21,6 @@ const Registry = {
           {
             Author: "fred",
             Date: "01-04-2022",
-            Time: "10:21",
             Status: "Resolved",
             NoteText: "a little note",
           },

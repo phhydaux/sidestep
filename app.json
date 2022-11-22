@@ -2,7 +2,15 @@
   "expo": {
     "slug": "sidestep",
     "name": "sidestep",
-    "sdkVersion": "46.0.0"
+    "sdkVersion": "46.0.0",
+    "extra": {
+      "eas": {
+        "projectId": "67ebc0ee-0180-4a51-995c-9ad0398b8d3f"
+      }
+    },
+    "android": {
+      "package": "com.grendle.sidestep"
+    }
   },
   "name": "sidestep"
 }

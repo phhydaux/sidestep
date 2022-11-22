@@ -97,7 +97,7 @@ const EntryListScreen = ({ navigation, route }) => {
      
 
       <View style={styles.navbar}>
-        <Pressable onPress={() => setModalVisible(true)}>
+        <Pressable onPress={() => {setModalVisible(true)}}>
           <View style={{ alignItems: "center" }}>
             <Ionicons name="ios-home-outline" size={25} color={"black"} on />
             <Text>Home</Text>

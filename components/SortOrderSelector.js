@@ -1,7 +1,7 @@
 
 import React, {useState} from "react";
-import { Modal, StyleSheet, Text, View, Pressable, ViewComponent } from "react-native";
-import { TouchableWithoutFeedback } from "react-native-gesture-handler";
+import { Modal, StyleSheet, Text, View, Pressable, } from "react-native";
+
 import Registry from "../dataStore/dataSource";
 import RadioButton from "./RadioButton";
 

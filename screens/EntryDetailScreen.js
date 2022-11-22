@@ -1,4 +1,4 @@
-import React, { useRef, useState, useEffect } from "react";
+import React, { useRef, useState, useCallback } from "react";
 import { Ionicons } from "@expo/vector-icons";
 import {
   SafeAreaView,
@@ -14,6 +14,7 @@ import {
 
 import Registry from "../dataStore/dataSource";
 import RiskLevelBadge from "../components/RiskLevelBadge";
+import NoteModal from "../components/NoteModal";
 
 const EntryDetailScreen = ({ navigation, route }) => {
   var displayOrder = route.params.order;
@@ -30,9 +31,10 @@ const EntryDetailScreen = ({ navigation, route }) => {
 
   const displayedEntryID = useRef();
   const [ref, setRef] = useState(null);
-
-  const [flag, setFlag] = useState("black");
   const [noteModalVisible, setNoteModalVisible] = useState(false);
+  const [currentEntry, setCurrentEntry] = useState({});
+  const [flag, setFlag] = useState("black");
+ 
 
   // displayOrder:  Ordered array of the internalIDs to be displayed
   // startAt: The index number in the displayOrder which should be the
@@ -43,32 +45,37 @@ const EntryDetailScreen = ({ navigation, route }) => {
 
   const { width: windowWidth } = useWindowDimensions();
 
-  const onViewableItemsChanged = useRef(({ viewableItems, changed }) => {
+  // const onViewableItemsChanged = useRef(({ viewableItems, changed }) => {
+  //   displayedEntryID.current = viewableItems[0].item.InternalID;
+  //   startAt.current = displayedEntryID.current;
+
+  // });
+
+  const onViewCallBack = useCallback(({viewableItems}) => {
     displayedEntryID.current = viewableItems[0].item.InternalID;
-    startAt.current = displayedEntryID.current;
-    
+    setCurrentEntry(viewableItems[0].item);
+    var norman = viewableItems[0].item;
+    var fred = currentEntry.Title;
+   
+  }, []);
+
+  const viewabilityConfig = useRef({
+    viewAreaCoveragePercentThreshold: 50,
+    waitForInteraction: false,
   });
 
-const onMomentumScrollEnd = () =>  {
-    
+  const onMomentumScrollEnd = () => {
     if (displayedEntryID.current == 2) {
-      setFlag("red")
+      setFlag("red");
     } else {
-      setFlag("black")
+      setFlag("black");
     }
-  }
+  };
 
-  // useEffect is used to move the scroll position to the item clicked on in the list
-  // the setTimeout is to defeat a race condition and ensure the scrollable list is
-  // mounted before the scrollToOffset is attempted.
-  useEffect(() => {
-    if (ref != null) {
-      var offset = windowWidth * startAt.current;
-      setTimeout(() => {
-        ref.scrollToOffset({ offset: offset, animated: false });
-      }, 0);
-    }
-  });
+  const onLayout = () => {
+    var offset = windowWidth * startAt.current;
+    ref.scrollToOffset({ offset: offset, animated: false });
+  };
 
   // the renderItem function is used by FlatList
   const renderItem = ({ item }) => {
@@ -137,25 +144,25 @@ const onMomentumScrollEnd = () =>  {
     <SafeAreaView style={styles.container}>
       <View style={styles.scrollContainer}>
         <FlatList
-        onMomentumScrollEnd={()=>onMomentumScrollEnd()}
-        
+          onMomentumScrollEnd={() => onMomentumScrollEnd()}
           horizontal={true}
           data={entriesInOrder}
           renderItem={renderItem}
           keyExtractor={(item) => item.InternalID}
           extraData={Registry}
           pagingEnabled={true}
-          onViewableItemsChanged={onViewableItemsChanged.current}
-          viewabilityConfig={{ itemVisiblePercentThreshold: 50, waitForInteraction: true }}
+          onViewableItemsChanged={onViewCallBack}
+          onLayout={onLayout}
+          viewabilityConfig={viewabilityConfig.current}
           ref={(ref) => {
             setRef(ref);
           }}
         />
       </View>
-
+      <View></View>
       {/* Bottom Navigation Bar */}
       <View style={styles.navbar}>
-      <Pressable onPress={() => navigation.popToTop()}>
+        <Pressable onPress={() => navigation.popToTop()}>
           <View style={{ alignItems: "center" }}>
             <Ionicons name="ios-home-outline" size={25} color={"black"} on />
             <Text>Home</Text>
@@ -168,33 +175,33 @@ const onMomentumScrollEnd = () =>  {
             color={"black"}
             onPress={() => {
               //This needs to be the Registry/Category list
-            ShareButton(
-              "Regarding: " +
-                Registry.entries[displayedEntryID.current].Title +
-                " Reference:" +
-                Registry.entries[displayedEntryID.current].RiskID
-            );
-          }}
+              ShareButton(
+                "Regarding: " +
+                  Registry.entries[displayedEntryID.current].Title +
+                  " Reference:" +
+                  Registry.entries[displayedEntryID.current].RiskID
+              );
+            }}
           />
           <Text>Share</Text>
         </View>
-        <Pressable onPress={() => { console.log(flag)}}>
-        <View style={{ alignItems: "center" }}>
-          <Ionicons name="chatbubble-outline" size={25} color={flag} />
-          <Text>Comment</Text>
-        </View>
+        <Pressable onPress={() => {setNoteModalVisible(true);}}>
+          <View style={{ alignItems: "center" }}>
+            <Ionicons name="chatbubble-outline" size={25} color={flag} />
+            <Text></Text>
+          </View>
         </Pressable>
 
         <View style={{ alignItems: "center" }}>
           <Ionicons name="ellipsis-horizontal" size={25} color={"black"} />
-          <Text>{displayedEntryID.current}</Text>
+          <Text>More</Text>
         </View>
-
-
-
-      
       </View>
-  
+      <NoteModal
+        noteModalVisible={noteModalVisible}
+        setNoteModalVisible={setNoteModalVisible}
+        displayedEntry={currentEntry}
+      />
     </SafeAreaView>
   );
 };
