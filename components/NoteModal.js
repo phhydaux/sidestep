@@ -1,3 +1,5 @@
+import { getDatabase, ref, push, set } from "firebase/database";
+import { database } from "../firebaseConfig";
 import React, { useState, useRef } from "react";
 import {
   Modal,
@@ -21,20 +23,28 @@ onChangeText();
 const postComment =() => {
 
   const Author = "Logged in User";
-  const commentDate = new Date();
+  const commentDate = "today";
   const commentStatus = "open";
   const commentText = text;
 
- Index = Registry.entries.findIndex((entry)=>{return (entry.InternalID == displayedEntry.InternalID)});
-console.log(Index);
 
- Registry.entries[Index].Addendums.Filenote.push({
-  Author: {Author},
-  Date: {commentDate},
+
+const db = database;
+const postListRef = ref(db,"Registries" );
+const newPostRef = push(postListRef);
+set(newPostRef, {
+  Author: "Kevin",
+  Reader: "John",
+  DAytime: {commentDate: "wednesday", problem: "serious", fixtime: "never"},
   Status: {commentStatus},
-  NoteText: {commentText},
+  Text: text,
 
- })
+})
+
+
+ 
+
+ 
  resetText();
 }
   

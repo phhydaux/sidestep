@@ -2,26 +2,27 @@
 import { initializeApp } from "firebase/app";
 import { getAuth } from "firebase/auth";
 import { getDatabase } from "firebase/database";
+import Constants from "expo-constants";
 
 // TODO: Add SDKs for Firebase products that you want to use
 // https://firebase.google.com/docs/web/setup#available-libraries
 
 // Your web app's Firebase configuration
 const firebaseConfig = {
-  apiKey: "AIzaSyDpuSN3S3MpqtBylAnKq5czqcYvn62sQLY",
-  authDomain: "sidestep-7b0a9.firebaseapp.com",
-  projectId: "sidestep-7b0a9",
-  storageBucket: "sidestep-7b0a9.appspot.com",
-  messagingSenderId: "791907726071",
-  appId: "1:791907726071:web:e3cbe1b58342eef72019f2",
-  databaseURL: "https://DATABASE_NAME.firebaseio.com",
+  apiKey: Constants.manifest.extra.apiKey,
+  authDomain: Constants.manifest.extra.authDomain,
+  projectId: Constants.manifest.extra.projectId,
+  storageBucket: Constants.manifest.extra.storageBucket,
+  messagingSenderId: Constants.manifest.extra.messagingSenderId,
+  appId: Constants.manifest.extra.appId,
+  databaseURL: "https://sidestep-7b0a9-default-rtdb.europe-west1.firebasedatabase.app/",
 };
 
 // Initialize Firebase
 const app = initializeApp(firebaseConfig);
 
 // Initialize Firebase Authentication and get a reference to the service
-const auth = getAuth(app);
+export const auth = getAuth(app);
 
 // Initialize Realtime Database and get a reference to the service
-const database = getDatabase(app);
+export const database = getDatabase(app);

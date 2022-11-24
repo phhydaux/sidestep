@@ -9,19 +9,19 @@ import {
 } from "react-native";
 import { createDrawerNavigator } from "@react-navigation/drawer";
 
-import HomeScreen from "../screens/HomeScreen";
+import MyHomeScreen from "../screens/MyHomeScreen";
 import PrivacyScreen from "../screens/PrivacyScreen";
 import EntryStackNavigator from "./EntryStackNavigator";
 import DrawerContent from "../components/DrawerContent";
-
 
 const Drawer = createDrawerNavigator();
 
 export default function HomePageNavigator(navigation) {
   return (
-    <Drawer.Navigator 
-    initialRouteName="EntryStackNavigator"
-    drawerContent={(props)=> <DrawerContent {...props}/>}>
+    <Drawer.Navigator
+      initialRouteName="EntryStackNavigator"
+      drawerContent={(props) => <DrawerContent {...props} />}
+    >
       <Drawer.Screen
         name="EntryStackNavigator"
         component={EntryStackNavigator}

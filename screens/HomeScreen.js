@@ -1,101 +1,59 @@
-import * as React from "react";
-import {
-  Button,
-  View,
-  SafeAreaView,
-  StyleSheet,
-  Image,
-  Text,
-  Pressable,
-} from "react-native";
-import { Ionicons } from "@expo/vector-icons";
+import { StatusBar } from "expo-status-bar";
+import React, { useContext } from "react";
+import { StyleSheet, Text, View } from "react-native";
 
-import Logo from "../components/Logo";
+import { IconButton } from "../components";
+import { signOut } from "firebase/auth";
+import { AuthenticatedUserContext } from "../navigators/AuthenticatedUserProvider";
+import { auth } from "../firebaseConfig";
 
-export default function HomeScreen({ navigation }) {
+export default function HomeScreen() {
+  const { user } = useContext(AuthenticatedUserContext);
+  const handleSignOut = async () => {
+    try {
+      await signOut(auth);
+    } catch (error) {
+      console.log(error);
+    }
+  };
   return (
-    <SafeAreaView style={{ flex: 1 }}>
-      <View style={styles.container}>
-        <View style={styles.left}>
-          <Pressable
-            onPress={() => {
-              navigation.openDrawer();
-            }}
-          >
-            <Ionicons
-              name="menu-outline"
-              size={30}
-              color="black"
-              style={styles.leftButton}
-            />
-          </Pressable>
-        </View>
-        <View style={styles.center}>
-          <Logo size={5} />
-          <Text style={{ fontSize: 20, paddingLeft: 5 }}>RYXK</Text>
-        </View>
-        <View style={styles.right}></View>
+    <View style={styles.container}>
+      <StatusBar style="dark-content" />
+      <View style={styles.row}>
+        <Text style={styles.title}>Welcome {user.email}!</Text>
+        <IconButton
+          name="logout"
+          size={24}
+          color="#fff"
+          onPress={handleSignOut}
+        />
       </View>
-      <View style={styles.titleContainer}>
-<Text style = {styles.titleText}>My Registries</Text>
-      </View>
-      <View style={styles.myRegistries}> 
-      <Text style={styles.myRegistriesText} onPress={()=> navigation.navigate("Section")}>London Risk Register</Text>
-      <Text style={styles.myRegistriesText}>National Risk Register 2020</Text>
-      <Text style={styles.myRegistriesText}>Southwark Council Risk Register</Text>
-      <Text style={styles.myRegistriesText}>CiCS Risk Register 2016</Text>
-      </View>
-<View style={styles.titleContainer}>
-<Text style = {styles.titleText}>Shared Registries</Text>
-</View>
-<View style={styles.myRegistries}>
-    <Text style={styles.myRegistriesText}>Project Alpha</Text>
-    <Text style={styles.myRegistriesText}>Fernanda's Tech</Text>
-</View>
-      
-    </SafeAreaView>
+      <Text style={styles.text}>Your UID is: {user.uid} </Text>
+    </View>
   );
 }
 
-const styles = new StyleSheet.create({
-  bodycontainer: {},
-  bodytext: {},
-
-  center: {
-    flex: 1,
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "center",
-  },
+const styles = StyleSheet.create({
   container: {
-    flex: 0,
+    flex: 1,
+    backgroundColor: "#8c8c8c",
+    paddingTop: 50,
+    paddingHorizontal: 12,
+  },
+  row: {
     flexDirection: "row",
     justifyContent: "space-between",
+    alignItems: "center",
+    marginBottom: 24,
   },
-  left: {
-    minWidth: 80,
-
-    paddingLeft: 10,
+  title: {
+    fontSize: 24,
+    fontWeight: "600",
+    color: "#fff",
   },
-  leftButton: {},
-  myRegistries: {
-    padding: 5,
-   
-  },
-  myRegistriesText: {
-    padding: 10,
+  text: {
     fontSize: 16,
     fontWeight: "normal",
-  },
-  right: {
-    minWidth: 80,
-  },
-  titleContainer: {
-    backgroundColor: "#cdcdcd",
-  },
-  titleText: {
-    fontSize: 18,
-    fontWeight: "bold",
-    padding: 15,
+    color: "#fff",
   },
 });
