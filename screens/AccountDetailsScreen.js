@@ -1,19 +1,22 @@
-import { StatusBar } from "expo-status-bar";
-import React from "react";
-import { useState } from "react";
-import { StyleSheet, Text, View, Button as RNButton } from "react-native";
-
+import React, { useContext, useEffect, useState } from "react";
+import { View, Text, StyleSheet, SafeAreaView } from "react-native";
 import { Button, InputField, ErrorMessage } from "../components";
+import { AuthenticatedUserContext } from "../navigators/AuthenticatedUserProvider";
+
 import { auth, database } from "../firebaseConfig";
-import { createUserWithEmailAndPassword } from "firebase/auth";
+import { set, ref } from "firebase/database";
 
+export default function AccountDetailsScreen({ navigation }) {
+  const {  userProfile, setUserProfile } = useContext(
+    AuthenticatedUserContext
+  );
 
-export default function SignupScreen({ navigation }) {
-  const [email, setEmail] = useState("");
+  const [email, setEmail] = useState(auth.currentUser.email);
   const [password, setPassword] = useState("");
   const [passwordVisibility, setPasswordVisibility] = useState(true);
   const [rightIcon, setRightIcon] = useState("eye");
   const [signupError, setSignupError] = useState("");
+  const [displayName, setDisplayName] = useState(userProfile.Name);
 
   const handlePasswordVisibility = () => {
     if (rightIcon === "eye") {
@@ -25,21 +28,19 @@ export default function SignupScreen({ navigation }) {
     }
   };
 
-  const onHandleSignup = async () => {
-    try {
-      if (email !== "" && password !== "") {
-        await createUserWithEmailAndPassword(auth, email, password);
-      }
-    } catch (error) {
-      setSignupError(error.message);
-    }
-  };
+  const handleConfirm = () => {
+    set(ref(database, "/Users/" + auth.currentUser.uid), {
+      ...userProfile,
+      Name: displayName,
+      Email: email,
+      newAccount: false,
+    });
 
+    navigation.goBack();
+  };
   return (
     <View style={styles.container}>
-      <StatusBar style="dark-content" />
-      <Text style={styles.title}>Create new account</Text>
-
+      <Text>Hello World</Text>
       <InputField
         inputStyle={{
           fontSize: 14,
@@ -76,38 +77,58 @@ export default function SignupScreen({ navigation }) {
         onChangeText={(text) => setPassword(text)}
         handlePasswordVisibility={handlePasswordVisibility}
       />
+      <InputField
+        inputStyle={{
+          fontSize: 14,
+        }}
+        containerStyle={{
+          backgroundColor: "#fff",
+          marginBottom: 20,
+        }}
+        leftIcon="account"
+        placeholder="Enter Account Name"
+        autoCapitalize="words"
+        autoCorrect={false}
+        textContentType="name"
+        value={displayName}
+        onChangeText={(text) => setDisplayName(text)}
+      />
       {signupError ? <ErrorMessage error={signupError} visible={true} /> : null}
       <Button
-        onPress={onHandleSignup}
+        onPress={handleConfirm}
         backgroundColor="#f57c00"
-        title="Signup"
+        title="Confirm Details"
         tileColor="#fff"
         titleSize={20}
         containerStyle={{
           marginBottom: 24,
         }}
       />
-      <RNButton
-        onPress={() => navigation.navigate("Login")}
-        title="Go to Login"
-        color="#fff"
-      />
     </View>
   );
 }
 
-const styles = StyleSheet.create({
+const styles = new StyleSheet.create({
+  button: {
+    alignItems: "flex-end",
+    justifyContent: "flex-end",
+    flexDirection: "row",
+    padding: 10,
+    paddingRight: 50,
+
+    width: "100%",
+  },
+  bodytext: {
+    padding: 15,
+  },
   container: {
     flex: 1,
-    backgroundColor: "#e93b81",
-    paddingTop: 50,
-    paddingHorizontal: 12,
+    alignItems: "flex-start",
+    justifyContent: "flex-start",
   },
-  title: {
-    fontSize: 24,
-    fontWeight: "600",
-    color: "#fff",
-    alignSelf: "center",
-    paddingBottom: 24,
+  textcontainer: {
+    flex: 0,
+    alignItems: "flex-start",
+    justifyContent: "flex-start",
   },
 });

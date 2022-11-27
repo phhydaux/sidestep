@@ -36,6 +36,7 @@ export default function LoginScreen({ navigation }) {
     } catch (error) {
       setLoginError(error.message);
     }
+    
   };
 
   return (
@@ -59,9 +60,10 @@ export default function LoginScreen({ navigation }) {
         autoCapitalize="none"
         keyboardType="email-address"
         textContentType="emailAddress"
-        autoFocus={true}
+        autoFocus={false}
         value={email}
         onChangeText={(text) => setEmail(text)}
+        
       />
       <InputField
         inputStyle={{

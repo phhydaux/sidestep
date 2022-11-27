@@ -1,4 +1,4 @@
-import * as React from "react";
+import React, { useRef, useContext, useState, useEffect } from "react";
 import {
   Button,
   View,
@@ -9,10 +9,22 @@ import {
   Pressable,
 } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
+import { onValue, ref, set } from "firebase/database";
+import { AuthenticatedUserContext } from "../navigators/AuthenticatedUserProvider";
+
+import { auth, database } from "../firebaseConfig";
 
 import Logo from "../components/Logo";
+import ListMyRegistries from "../components/ListMyRegistries";
 
 export default function MyHomeScreen({ navigation }) {
+  const { userProfile, setUserProfile } = useContext(AuthenticatedUserContext);
+  
+
+
+
+
+
   return (
     <SafeAreaView style={{ flex: 1 }}>
       <View style={styles.container}>
@@ -37,22 +49,19 @@ export default function MyHomeScreen({ navigation }) {
         <View style={styles.right}></View>
       </View>
       <View style={styles.titleContainer}>
-<Text style = {styles.titleText}>My Registries</Text>
+        <Text style={styles.titleText}>My Registries</Text>
+        <Text>{userProfile.Name}</Text>
       </View>
-      <View style={styles.myRegistries}> 
-      <Text style={styles.myRegistriesText} onPress={()=> navigation.navigate("Section")}>London Risk Register</Text>
-      <Text style={styles.myRegistriesText}>National Risk Register 2020</Text>
-      <Text style={styles.myRegistriesText}>Southwark Council Risk Register</Text>
-      <Text style={styles.myRegistriesText}>CiCS Risk Register 2016</Text>
+
+      <ListMyRegistries navigation={navigation}/>
+
+      <View style={styles.titleContainer}>
+        <Text style={styles.titleText}>Shared Registries</Text>
       </View>
-<View style={styles.titleContainer}>
-<Text style = {styles.titleText}>Shared Registries</Text>
-</View>
-<View style={styles.myRegistries}>
-    <Text style={styles.myRegistriesText}>Project Alpha</Text>
-    <Text style={styles.myRegistriesText}>Fernanda's Tech</Text>
-</View>
-      
+      <View style={styles.myRegistries}>
+        <Text style={styles.myRegistriesText}>Project Alpha</Text>
+        <Text style={styles.myRegistriesText}>Fernanda's Tech</Text>
+      </View>
     </SafeAreaView>
   );
 }
@@ -80,7 +89,6 @@ const styles = new StyleSheet.create({
   leftButton: {},
   myRegistries: {
     padding: 5,
-   
   },
   myRegistriesText: {
     padding: 10,
