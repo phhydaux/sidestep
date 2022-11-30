@@ -29,10 +29,11 @@ export default function AccountDetailsScreen({ navigation }) {
   };
 
   const handleConfirm = () => {
-    set(ref(database, "/Users/" + auth.currentUser.uid), {
-      ...userProfile,
-      Name: displayName,
-      Email: email,
+    set(ref(database, "/Users/" + auth.currentUser.uid + "/Name"), {displayName});
+    set(ref(database, "/Users/" + auth.currentUser.uid + "/Email"), {email});
+    setUserProfile({
+      //Email: email,
+     // Name: displayName,
       newAccount: false,
     });
 

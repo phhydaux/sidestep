@@ -1,6 +1,7 @@
-import React, { useState } from "react";
+import React, { useState, useContext } from "react";
 import { StatusBar } from "expo-status-bar";
 import { Ionicons } from "@expo/vector-icons";
+import { AuthenticatedUserContext } from "../navigators/AuthenticatedUserProvider";
 import {
   StyleSheet,
   View,
@@ -15,6 +16,7 @@ import EntrySummaryCard from "../components/EntrySummaryCard";
 import SortOrderSelector from "../components/SortOrderSelector";
 
 const EntryListScreen = ({ navigation, route }) => {
+  const { userProfile, setUserProfile } = useContext(AuthenticatedUserContext);
   const [modalVisible, setModalVisible] = useState(false);
   const [option, setOption] = useState(null);
   const [displayOrder, setDisplayOrder] = useState(
@@ -34,38 +36,41 @@ const EntryListScreen = ({ navigation, route }) => {
 
   //let displayOrder = [0, 1, 2, 3];
 
+  let selection = route.params.selectionOption;
+
   return (
     <View style={{ flex: 1 }}>
       <StatusBar />
-      <Pressable onPress={()=>{navigation.pop()}} >
-      <View style={styles.header}>
-      
-        <Ionicons
-          name="chevron-back-sharp"
-          size={24}
-          color="black"
-        
-          style={styles.leftButton}
-        />
-        <View style={styles.twoLinesTogether}>
-          <View style={styles.topLine}>
-            <Text style={{ fontSize: 10 }}>London Risk Register</Text>
+      <Pressable
+        onPress={() => {
+          navigation.pop();
+        }}
+      >
+        <View style={styles.header}>
+          <Ionicons
+            name="chevron-back-sharp"
+            size={24}
+            color="black"
+            style={styles.leftButton}
+          />
+          <View style={styles.twoLinesTogether}>
+            <View style={styles.topLine}>
+              <Text style={{ fontSize: 10 }}>{userProfile.currentRegistryName}</Text>
+            </View>
+            <View style={styles.secondLine}>
+              <Text style={{ fontWeight: "bold", fontSize: 15 }}>
+                {selection}
+              </Text>
+            </View>
           </View>
-          <View style={styles.secondLine}>
-            <Text style={{ fontWeight: "bold", fontSize: 15 }}>
-              Accident Hazards
-            </Text>
-          </View>
+          <Ionicons
+            name="list"
+            size={24}
+            color="black"
+            onPress={() => setModalVisible(true)}
+            style={styles.rightButton}
+          />
         </View>
-        <Ionicons
-          name="list"
-          size={24}
-          color="black"
-          onPress={() => setModalVisible(true)}
-          style={styles.rightButton}
-        />
-        
-      </View>
       </Pressable>
 
       <SortOrderSelector
@@ -82,7 +87,7 @@ const EntryListScreen = ({ navigation, route }) => {
           <View key={entryNum}>
             <Pressable
               onPress={() =>
-                navigation.push("Entry Detail", {               
+                navigation.push("Entry Detail", {
                   index: index,
                   order: dispOrder,
                 })
@@ -94,10 +99,13 @@ const EntryListScreen = ({ navigation, route }) => {
           </View>
         ))}
       </ScrollView>
-     
 
       <View style={styles.navbar}>
-        <Pressable onPress={() => {setModalVisible(true)}}>
+        <Pressable
+          onPress={() => {
+            setModalVisible(true);
+          }}
+        >
           <View style={{ alignItems: "center" }}>
             <Ionicons name="ios-home-outline" size={25} color={"black"} on />
             <Text>Home</Text>

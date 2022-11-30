@@ -15,18 +15,13 @@ import { AuthenticatedUserContext } from "../navigators/AuthenticatedUserProvide
 import { auth, database } from "../firebaseConfig";
 
 import Logo from "../components/Logo";
-import ListMyRegistries from "../components/ListMyRegistries";
+import RegistrySelector from "../components/RegistrySelector";
 
 export default function MyHomeScreen({ navigation }) {
   const { userProfile, setUserProfile } = useContext(AuthenticatedUserContext);
-  
-
-
-
-
 
   return (
-    <SafeAreaView style={{ flex: 1 }}>
+    <SafeAreaView style={{ flex: 0 }}>
       <View style={styles.container}>
         <View style={styles.left}>
           <Pressable
@@ -53,7 +48,7 @@ export default function MyHomeScreen({ navigation }) {
         <Text>{userProfile.Name}</Text>
       </View>
 
-      <ListMyRegistries navigation={navigation}/>
+      <RegistrySelector navigation={navigation} style={{}} />
 
       <View style={styles.titleContainer}>
         <Text style={styles.titleText}>Shared Registries</Text>

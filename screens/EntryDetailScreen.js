@@ -15,6 +15,7 @@ import {
 import Registry from "../dataStore/dataSource";
 import RiskLevelBadge from "../components/RiskLevelBadge";
 import NoteModal from "../components/NoteModal";
+import PageEditMenuModal from "../components/PageEditMenuModal";
 
 const EntryDetailScreen = ({ navigation, route }) => {
   var displayOrder = route.params.order;
@@ -32,6 +33,7 @@ const EntryDetailScreen = ({ navigation, route }) => {
   const displayedEntryID = useRef();
   const [ref, setRef] = useState(null);
   const [noteModalVisible, setNoteModalVisible] = useState(false);
+  const [pageEditMenuModalVisible, setPageEditMenuModalVisible] = useState(false);
   const [currentEntry, setCurrentEntry] = useState({});
   const [flag, setFlag] = useState("black");
  
@@ -191,16 +193,22 @@ const EntryDetailScreen = ({ navigation, route }) => {
             <Text></Text>
           </View>
         </Pressable>
-
+        <Pressable onPress={() => {setPageEditMenuModalVisible(true);}}>
         <View style={{ alignItems: "center" }}>
           <Ionicons name="ellipsis-horizontal" size={25} color={"black"} />
           <Text>More</Text>
         </View>
+        </Pressable>
       </View>
       <NoteModal
         noteModalVisible={noteModalVisible}
         setNoteModalVisible={setNoteModalVisible}
         displayedEntry={currentEntry}
+      />
+      <PageEditMenuModal
+      pageEditMenuModalVisible={pageEditMenuModalVisible}
+      setPageEditMenuModalVisible={setPageEditMenuModalVisible}
+      displayedEntry={currentEntry}
       />
     </SafeAreaView>
   );

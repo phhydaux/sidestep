@@ -1,4 +1,4 @@
-import { getDatabase, ref, push, set } from "firebase/database";
+import { ref, push, set } from "firebase/database";
 import { database } from "../firebaseConfig";
 import React, { useState, useRef } from "react";
 import {
@@ -9,11 +9,10 @@ import {
   Pressable,
   TextInput,
 } from "react-native";
-import Registry from "../dataStore/dataSource";
 
-const NoteModal = ({
-  noteModalVisible,
-  setNoteModalVisible,
+const PageEditScreen = ({
+  PageEditScreenVisible,
+  setPageEditScreenVisible,
   displayedEntry,
 }) => {
   const [text, onChangeText] = useState();
@@ -51,11 +50,11 @@ const NoteModal = ({
       animationType="slide"
       onShow={resetText}
       transparent={false}
-      visible={noteModalVisible}
+      visible={PageEditScreenVisible}
       presentationStyle="formSheet"
       onRequestClose={() => {
         resetText();
-        setNoteModalVisible(!noteModalVisible);
+        setPageEditScreenVisible(!PageEditMenuVisible);
       }}
     >
       <View
@@ -70,7 +69,7 @@ const NoteModal = ({
         <Pressable
           onPress={() => {
             resetText();
-            setNoteModalVisible(!noteModalVisible);
+            setPageEditMenuVisible(!PageEditMenuVisible);
           }}
         >
           <Text
@@ -83,7 +82,7 @@ const NoteModal = ({
             Cancel
           </Text>
         </Pressable>
-        <Text>New Comment</Text>
+        <Text>New Entry</Text>
         <Pressable
           onPress={() => {
             postComment();
@@ -93,12 +92,14 @@ const NoteModal = ({
             style={{
               fontSize: 18,
               padding: 10,
+              backgroundColor: "pink",
             }}
           >
-            Post
+            Save
           </Text>
         </Pressable>
       </View>
+      {/* End of Header, start of the body of the page  */}
       <View style={{ flexDirection: "row" }}>
         <Text>Commenting on: </Text>
         <Text style={{ fontWeight: "bold", fontSize: 15 }}>
@@ -129,7 +130,7 @@ const NoteModal = ({
   );
 };
 
-export default NoteModal;
+export default PageEditScreen;
 
 const styles = StyleSheet.create({
   paragraph: {},

@@ -5,7 +5,6 @@ import { View, ActivityIndicator } from "react-native";
 import { AuthenticatedUserContext } from "./AuthenticatedUserProvider";
 import AuthStack from "./AuthStack";
 
-
 import { auth, database } from "../firebaseConfig";
 import HomePageNavigator from "./HomePageNavigator";
 import { ref, set, onValue } from "firebase/database";
@@ -19,16 +18,24 @@ export default function RootNavigator() {
 
     const unsubscribeAuth = auth.onAuthStateChanged((authenticatedUser) => {
       if (authenticatedUser) {
+        //a user is logged on
         const userRef = ref(database, "/Users/" + authenticatedUser.uid);
+
         onValue(
           userRef,
           (snapshot) => {
             if (snapshot.exists()) {
-             setUserProfile(snapshot.val());
+              //returning user
+              setUserProfile({
+                currentUser: authenticatedUser.uid,
+                Name: snapshot.val()["Name"],
+                newAccount: false,
+              });
             } else {
-              set(userRef, {
-                Name: "Anonymouse Prime",
-                newAccount: true
+              //new user
+              setUserProfile({
+                Name: "Anonymous",
+                newAccount: true,
               });
             }
             setIsLoading(false);
@@ -36,11 +43,12 @@ export default function RootNavigator() {
           []
         );
       } else {
+        //no user is logged in
         setUserProfile(null);
         setIsLoading(false);
       }
     });
-       // unsubscribe auth listener on unmount
+    // unsubscribe auth listener on unmount
     return unsubscribeAuth;
   }, []);
 
