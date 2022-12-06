@@ -15,6 +15,8 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import EntrySummaryCard from "../components/EntrySummaryCard";
 import SortOrderSelector from "../components/SortOrderSelector";
 
+
+
 const EntryListScreen = ({ navigation, route }) => {
   const { userProfile, setUserProfile } = useContext(AuthenticatedUserContext);
   const [modalVisible, setModalVisible] = useState(false);
@@ -22,6 +24,9 @@ const EntryListScreen = ({ navigation, route }) => {
   const [displayOrder, setDisplayOrder] = useState(
     Registry.entries.map(({ InternalID }) => InternalID)
   );
+
+
+
 
   // if (route.params.modalVisible == 'true') setModalVisible('true');
   // This is the starting screen of my experiment.  This is going to be the list of risks
@@ -36,7 +41,10 @@ const EntryListScreen = ({ navigation, route }) => {
 
   //let displayOrder = [0, 1, 2, 3];
 
-  let selection = route.params.selectionOption;
+ // let selection = route.params.selectionOption;
+
+ console.log(userProfile.currentSection);
+
 
   return (
     <View style={{ flex: 1 }}>
@@ -59,7 +67,7 @@ const EntryListScreen = ({ navigation, route }) => {
             </View>
             <View style={styles.secondLine}>
               <Text style={{ fontWeight: "bold", fontSize: 15 }}>
-                {selection}
+                {userProfile.currentSection}
               </Text>
             </View>
           </View>

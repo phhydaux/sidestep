@@ -1,33 +1,65 @@
-import React, { useContext, useEffect, useState } from "react";
+import React, { useContext, useEffect, useState, useRef } from "react";
 import { StatusBar } from "expo-status-bar";
 import { StyleSheet, View, Text, Button, Pressable } from "react-native";
+import Animated, { Layout, LightSpeedInLeft, StretchInY, Transition, useAnimatedStyle, useSharedValue, withSpring } from "react-native-reanimated";
 import { ScrollView } from "react-native-gesture-handler";
 import { Ionicons } from "@expo/vector-icons";
 import { AuthenticatedUserContext } from "../navigators/AuthenticatedUserProvider";
 import { ref, set, onValue, child } from "firebase/database";
 import { auth, database } from "../firebaseConfig";
 
-
-import DividorSelector from "../components/DividorSelector";
+import FilterSelector from "../components/FilterSelector";
+//import { forModalPresentationIOS } from "@react-navigation/stack/lib/typescript/src/TransitionConfigs/CardStyleInterpolators";
 
 const SectionSelectionScreen = ({ navigation }) => {
   const { userProfile, setUserProfile } = useContext(AuthenticatedUserContext);
-  const [dividorModalVisible, setDividorModalVisible] = useState(false);
-  const [currentDividor, setCurrentDividor] = useState("Hazard Group");
+  const [FilterModalVisible, setFilterModalVisible] = useState(false);
+  const [filterControlsVisible, setFilterControlsVisible] = useState(false);
+  const [currentFilter, setCurrentFilter] = useState("Hazard Group");
   const [order, setOrder] = useState();
-  
+
+  const ref = React.useRef();
+
+  const sharedrefvalue = useSharedValue("0%");
+
+  const varistyle = useAnimatedStyle(()=> {
+   
+return {
+        maxHeight: withSpring(sharedrefvalue.value),
+        flexGrow: 1,
+        backgroundColor: "wheat",
+        overflow: "hidden"
+     }
+
+    
+     
+
+  })
 
   //read from the currently selected Registry entry to get the
   //categories by which the registry can be ordered (e.g. sections, or locations),
   // and within each, the selections (section names or location names)
 
+  //This is just a placeholder
+  let availableFilters = Object.keys(userProfile.JSObjOfAllSelections);
 
- 
+  let currentSelectionOptions = Object.keys(
+    userProfile.JSObjOfAllSelections[currentFilter]
+  );
 
-//This is just a placeholder
-let availableDividors = Object.keys(userProfile.JSObjOfAllSelections);
-
-let currentSelectionOptions = Object.keys(userProfile.JSObjOfAllSelections[currentDividor]);
+  const handleonPress = () => {
+    
+    if (filterControlsVisible){
+      sharedrefvalue.value = "100%";
+      setFilterControlsVisible(false);
+      console.log("tick");
+    }else {
+      sharedrefvalue.value = "0%";
+      setFilterControlsVisible(true);
+      console.log("tock");
+    }
+  
+  };
 
   return (
     <View style={styles.container}>
@@ -50,48 +82,75 @@ let currentSelectionOptions = Object.keys(userProfile.JSObjOfAllSelections[curre
               </Text>
             </View>
           </View>
-          <Ionicons
-            name="list"
-            size={24}
-            color="black"
-            onPress={() => setDividorModalVisible(true)}
-            style={styles.rightButton}
-          />
+          <Pressable onPress={() => handleonPress()}>
+            <View style={{ backgroundColor: "pink", paddingLeft: 55 }}>
+              <Ionicons
+                name="list"
+                size={24}
+                color="black"
+                style={styles.rightButton}
+              />
+            </View>
+          </Pressable>
         </View>
       </Pressable>
       <StatusBar style="auto" />
+
       <View style={styles.titlecontainer}>
-        <Text style={styles.titleline}>{currentDividor}</Text>
-        <Text>{ }</Text>
+        <Text style={styles.titleline}>{currentFilter}</Text>
+        <Text>betty</Text>
       </View>
       <ScrollView style={styles.scrollview}>
-        
-        {currentSelectionOptions.map((selection)=>(
-          <Text
-          style={styles.scrollviewitems}
-          key={selection}
-          onPress={() =>
-            navigation.navigate("EntryListScreen", {
-              selectionOption: selection,
-            })
-          }
-        >
-          {selection}
-        </Text>
+        <View>
+          <Text style={{ fontSize: 30, color: "red" }}>Hello Everybody</Text>
+        </View>
 
+        {currentSelectionOptions.map((selection) => (
+          <Text
+            style={styles.scrollviewitems}
+            key={selection}
+            onPress={() => {
+              navigation.navigate("EntryListScreen");
+              setUserProfile({
+                ...userProfile,
+                currentFilter: currentFilter,
+                currentSection: selection,
+              });
+            }}
+          >
+            {selection}
+          </Text>
         ))}
-        
+        <View>
+          {Object.keys(userProfile.JSObjOfAllSelections).map((filter) => (
+            <View key={filter} style={styles.outside}>
+              <Text style={styles.filterHeading}>Filter: {filter}</Text>
+            
+                <Animated.View   style={varistyle}>
+                {Object.keys(userProfile.JSObjOfAllSelections[filter]).map(
+                  (option) => (
+                    <Text key={option} style={styles.option}>
+                      {option}
+                    </Text>
+                  )
+                )}
+              </Animated.View>
+
+
+              
+             
+            </View>
+          ))}
+        </View>
       </ScrollView>
 
-      <DividorSelector
-      dividorModalVisible = {dividorModalVisible}
-      setDividorModalVisible = {setDividorModalVisible}
-      currentDividor = {currentDividor}
-      setCurrentDividor = {setCurrentDividor}
-      availableDividors = {availableDividors}
+      <FilterSelector
+        FilterModalVisible={FilterModalVisible}
+        setFilterModalVisible={setFilterModalVisible}
+        currentFilter={currentFilter}
+        setCurrentFilter={setCurrentFilter}
+        availableFilters={availableFilters}
       />
-      
-
 
       <View style={styles.navbar}>
         <Pressable onPress={() => navigation.popToTop()}>
@@ -129,10 +188,15 @@ export default SectionSelectionScreen;
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1,
+    flexGrow: 1,
     backgroundColor: "#aeaeae",
     alignItems: "flex-start",
     justifyContent: "flex-start",
+  },
+  filterHeading: {
+    fontSize: 20,
+    fontWeight: "bold",
+    padding: 10,
   },
   header: {
     maxHeight: 80,
@@ -143,6 +207,20 @@ const styles = StyleSheet.create({
     alignItems: "center",
     backgroundColor: "white",
     width: "100%",
+  },
+  inside: {
+    flexGrow: 1,
+    backgroundColor: "red",
+    maxHeight: 50,
+    overflow: "hidden"
+    
+
+  },
+  inside2: {
+    flex: 0,
+    backgroundColor: "wheat",
+
+    height: 0,
   },
   leftButton: {
     paddingLeft: 0,
@@ -156,6 +234,16 @@ const styles = StyleSheet.create({
     alignItems: "center",
     paddingBottom: 25,
   },
+  option: {
+    fontSize: 22,
+    padding: 5,
+    color: "blue",
+  },
+  outside: {
+    flexGrow: 1,
+    border: 1,
+  },
+
   rightButton: {
     paddingRight: 10,
   },

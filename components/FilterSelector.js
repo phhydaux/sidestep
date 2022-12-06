@@ -4,30 +4,27 @@ import { Modal, StyleSheet, Text, View, Pressable } from "react-native";
 import Registry from "../dataStore/dataSource";
 import RadioButton from "./RadioButton";
 
-const DividorSelector = ({
-  dividorModalVisible,
-  setDividorModalVisible,
-  currentDividor,
-  setCurrentDividor,
-  availableDividors,
+const FilterSelector = ({
+  FilterModalVisible,
+  setFilterModalVisible,
+  currentFilter,
+  setCurrentFilter,
+  availableFilters,
 }) => {
-
-
-  
   return (
     <Modal
       animationType="fade"
       transparent={true}
-      visible={ dividorModalVisible}
+      visible={FilterModalVisible}
       presentationStyle="overFullScreen"
       onRequestClose={() => {
         Alert.alert("Another Modal has been closed.");
-        setDividorModalVisible(!dividorModalVisible);
+        setFilterModalVisible(!FilterModalVisible);
       }}
     >
       <Pressable
         onPress={() => {
-          setDividorModalVisible(!dividorModalVisible);
+          setFilterModalVisible(!FilterModalVisible);
         }}
         style={{ flex: 1 }}
       >
@@ -41,34 +38,27 @@ const DividorSelector = ({
         >
           <View
             style={{
-             
               padding: 15,
               backgroundColor: "white",
               borderRadius: 20,
             }}
           >
-            <View style={{  flexDirection: "column" }}>
+            <View style={{ flexDirection: "column" }}>
               <Text>Display this registry, divided by:</Text>
 
-              {availableDividors.map((dividor)=>(
-                <Pressable onPress={()=>{
-                  setCurrentDividor(dividor);
-                  setDividorModalVisible(!dividorModalVisible);
-                }}>
-                <View  style={styles.dividorView}>
-                  <Text style={styles.dividor}>{dividor}</Text>
-                </View>
+              {availableFilters.map((filter) => (
+                <Pressable
+                  onPress={() => {
+                    setCurrentFilter(filter);
+                    setFilterModalVisible(!FilterModalVisible);
+                  }}
+                  key={filter}
+                >
+                  <View style={styles.FilterView}>
+                    <Text style={styles.filter}>{filter}</Text>
+                  </View>
                 </Pressable>
-
-
-
               ))}
-
-
-             
-            
-
-        
             </View>
           </View>
         </View>
@@ -77,18 +67,14 @@ const DividorSelector = ({
   );
 };
 
-export default DividorSelector;
+export default FilterSelector;
 
 const styles = StyleSheet.create({
-  
-  dividor: {
+  filter: {
     fontSize: 20,
     fontWeight: "bold",
     padding: 20,
   },
-  dividorView: {
-
-  },
+  FilterView: {},
   paragraph: {},
-
 });
