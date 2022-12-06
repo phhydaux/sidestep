@@ -9,24 +9,25 @@ import {
   Text,
   ScrollView,
   Pressable,
+  useWindowDimensions,
 } from "react-native";
 import Registry from "../dataStore/dataSource";
 import { SafeAreaView } from "react-native-safe-area-context";
 import EntrySummaryCard from "../components/EntrySummaryCard";
+import FilterAndSortSelector from "../components/FilterAndSortSelector";
 import SortOrderSelector from "../components/SortOrderSelector";
-
-
 
 const EntryListScreen = ({ navigation, route }) => {
   const { userProfile, setUserProfile } = useContext(AuthenticatedUserContext);
   const [modalVisible, setModalVisible] = useState(false);
+  const [filterSortSelectorVisible, setFilterSortSelectorVisible] = useState(true);
   const [option, setOption] = useState(null);
   const [displayOrder, setDisplayOrder] = useState(
     Registry.entries.map(({ InternalID }) => InternalID)
   );
 
-
-
+  const { windowHeight, windowWidth } = useWindowDimensions();
+  const halfWindowWidth = windowWidth / 2;
 
   // if (route.params.modalVisible == 'true') setModalVisible('true');
   // This is the starting screen of my experiment.  This is going to be the list of risks
@@ -41,10 +42,9 @@ const EntryListScreen = ({ navigation, route }) => {
 
   //let displayOrder = [0, 1, 2, 3];
 
- // let selection = route.params.selectionOption;
+  // let selection = route.params.selectionOption;
 
- console.log(userProfile.currentSection);
-
+  console.log(userProfile.currentSection);
 
   return (
     <View style={{ flex: 1 }}>
@@ -63,7 +63,9 @@ const EntryListScreen = ({ navigation, route }) => {
           />
           <View style={styles.twoLinesTogether}>
             <View style={styles.topLine}>
-              <Text style={{ fontSize: 10 }}>{userProfile.currentRegistryName}</Text>
+              <Text style={{ fontSize: 10 }}>
+                {userProfile.currentRegistryName}
+              </Text>
             </View>
             <View style={styles.secondLine}>
               <Text style={{ fontWeight: "bold", fontSize: 15 }}>
@@ -88,6 +90,62 @@ const EntryListScreen = ({ navigation, route }) => {
         setOption={setOption}
         displayOrder={displayOrder}
         setDisplayOrder={setDisplayOrder}
+      />
+      <View
+        style={{
+          flexDirection: "row",
+          justifyContent: "space-evenly"
+        }}
+      >
+        
+         
+          <Pressable  
+          onPress = {()=>setFilterSortSelectorVisible(true)}
+          style={{
+              width: "50%",
+              borderWidth: 1,
+              flexDirection: "row",
+              borderColor: "black",
+              alignContent: "center",
+              justifyContent: "left",
+              alignItems: "center",
+              padding: 10,
+              
+            }}>
+            <Ionicons
+              name="funnel-outline"
+              size={24}
+              color="black"
+              onPress={() => setModalVisible(true)}
+              style={{}}
+            />
+            <Text style={{ color: "black" , margin: 5, paddingRight: 5}}> {userProfile.currentOptionName}</Text>
+            </Pressable>
+         <Pressable
+         style={{
+            width: "50%",
+            flexDirection: "row",
+            borderWidth: 1,
+            alignContent: "center",
+            justifyContent: "center",
+            alignItems: "center",
+            padding: 10,
+          }}>
+          <Ionicons
+            name="swap-vertical-outline"
+            size={24}
+            color="black"
+            onPress={() => setModalVisible(true)}
+            style={{}}
+          />
+          <Text style={{ color: "#777777" }}> {userProfile.currentFilterName}</Text>
+          </Pressable>
+        
+      </View>
+
+      <FilterAndSortSelector
+      filterSortSelectorVisible={filterSortSelectorVisible}
+      setFilterSortSelectorVisible={setFilterSortSelectorVisible}
       />
 
       <ScrollView>
