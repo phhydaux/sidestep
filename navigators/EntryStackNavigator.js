@@ -31,13 +31,13 @@ export default function EntryStackNavigator() {
         }}
       />
 
-      <Stack.Screen
+      {/* <Stack.Screen
         name="Section"
         component={SectionSelectionScreen}
         options={{
           headerShown: false,
         }}
-      />
+      /> */}
       <Stack.Screen
         name="EntryListScreen"
         component={EntryListScreen}

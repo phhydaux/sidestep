@@ -15,12 +15,12 @@ import Registry from "../dataStore/dataSource";
 import { SafeAreaView } from "react-native-safe-area-context";
 import EntrySummaryCard from "../components/EntrySummaryCard";
 import FilterAndSortSelector from "../components/FilterAndSortSelector";
-import SortOrderSelector from "../components/SortOrderSelector";
+import SortOrderSelector from "../components/DefunctSortOrderSelector";
 
 const EntryListScreen = ({ navigation, route }) => {
   const { userProfile, setUserProfile } = useContext(AuthenticatedUserContext);
   const [modalVisible, setModalVisible] = useState(false);
-  const [filterSortSelectorVisible, setFilterSortSelectorVisible] = useState(true);
+  const [filterSortSelectorVisible, setFilterSortSelectorVisible] = useState(false);
   const [option, setOption] = useState(null);
   const [displayOrder, setDisplayOrder] = useState(
     Registry.entries.map(({ InternalID }) => InternalID)
@@ -43,8 +43,9 @@ const EntryListScreen = ({ navigation, route }) => {
   //let displayOrder = [0, 1, 2, 3];
 
   // let selection = route.params.selectionOption;
+  let answer;
+    if (filterSortSelectorVisible) {answer = "true"} else {answer = "false"};
 
-  console.log(userProfile.currentSection);
 
   return (
     <View style={{ flex: 1 }}>
@@ -62,16 +63,12 @@ const EntryListScreen = ({ navigation, route }) => {
             style={styles.leftButton}
           />
           <View style={styles.twoLinesTogether}>
-            <View style={styles.topLine}>
-              <Text style={{ fontSize: 10 }}>
-                {userProfile.currentRegistryName}
+           
+            
+              <Text style={{ fontWeight: "normal", fontSize: 15 }}>
+              {userProfile.currentRegistryName}
               </Text>
-            </View>
-            <View style={styles.secondLine}>
-              <Text style={{ fontWeight: "bold", fontSize: 15 }}>
-                {userProfile.currentSection}
-              </Text>
-            </View>
+            
           </View>
           <Ionicons
             name="list"
@@ -109,7 +106,7 @@ const EntryListScreen = ({ navigation, route }) => {
               alignContent: "center",
               justifyContent: "left",
               alignItems: "center",
-              padding: 10,
+            
               
             }}>
             <Ionicons
@@ -117,9 +114,25 @@ const EntryListScreen = ({ navigation, route }) => {
               size={24}
               color="black"
               onPress={() => setModalVisible(true)}
-              style={{}}
+              style={{paddingRight: 5}}
             />
-            <Text style={{ color: "black" , margin: 5, paddingRight: 5}}> {userProfile.currentOptionName}</Text>
+           {/*   */}
+            {(userProfile.currentFilterName != null) && (
+<View>
+
+<View>
+<Text style={{ color: "#777777" }}>{userProfile.currentFilterName}</Text>
+</View>
+<View>
+<Text style={{ color: "black" , fontWeight: "bold", marginRight: 30,}}>{userProfile.currentOptionName}</Text>
+</View>
+
+</View>
+
+
+          )}
+          {(userProfile.currentFilterName === null) && (
+            <Text style={{ color: "#777777" }}>  No current filter</Text>)}
             </Pressable>
          <Pressable
          style={{
@@ -138,7 +151,12 @@ const EntryListScreen = ({ navigation, route }) => {
             onPress={() => setModalVisible(true)}
             style={{}}
           />
-          <Text style={{ color: "#777777" }}> {userProfile.currentFilterName}</Text>
+     
+
+          {(userProfile.currentFilterName != null) && (
+          <Text style={{ color: "#777777" }}>Status: {answer}+{userProfile.currentFilterName}</Text>)}
+          {(userProfile.currentFilterName === null) && (
+            <Text style={{ color: "#777777" }}> Status: {answer}</Text>)}
           </Pressable>
         
       </View>
@@ -250,8 +268,8 @@ const styles = StyleSheet.create({
   },
   header: {
     maxHeight: 80,
-    paddingTop: 45,
-    padding: 10,
+    paddingTop: 40,
+    padding: 5,
     flex: 0,
     flexDirection: "row",
 

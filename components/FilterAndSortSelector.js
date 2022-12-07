@@ -3,14 +3,27 @@ import { Modal, StyleSheet, Text, View, Pressable } from "react-native";
 import Button from "./Button";
 import { AuthenticatedUserContext } from "../navigators/AuthenticatedUserProvider";
 
-import RadioButton from "./RadioButton";
+
 import Animated, {
   useAnimatedStyle,
+  AnimatedLayout,
   withSequence,
   withRepeat,
   useSharedValue,
   withTiming,
   withSpring,
+  withDelay,
+  SlideInRight,
+  FlipOutEasyX,
+  LinearTransition,
+  ZoomInDown,
+  ZoomInUp,
+  Layout,
+  FlipInEasyX,
+  combineTransition,
+  FadeOut,
+  FadeIn,
+  EntryExitTransition,
 } from "react-native-reanimated";
 
 const FilterAndSortSelector = ({
@@ -19,93 +32,111 @@ const FilterAndSortSelector = ({
 }) => {
   const { userProfile, setUserProfile } = useContext(AuthenticatedUserContext);
 
-  const visibility = useSharedValue(0);
-  const sharedOpacity = useSharedValue(0);
-
   // Collect the data required
   // Array of Filter Group names
   let availableFilters = Object.keys(userProfile.JSObjOfAllSelections);
 
   let currentFilter = "Hazard Group";
 
+  const experimental = useSharedValue();
+
+  if (filterSortSelectorVisible) {
+    experimental.value = 1;
+  } else {
+    experimental.value = withDelay(1000, withTiming(0));
+  }
+
+  const animatedStyles = useAnimatedStyle(()=>{
+return{
+  borderWidth: experimental.value
+}
+ 
+
+
+
+  })
+
   let currentSelectionOptions = Object.keys(
     userProfile.JSObjOfAllSelections[currentFilter]
   );
 
-  //Calculate length of menu
-  let countOfGroups = 0;
-  let countOfOptions = 0;
-  availableFilters.forEach((filter) => {
-    countOfGroups++;
-    Object.keys(userProfile.JSObjOfAllSelections[filter]).forEach((option)=>{
-      countOfOptions++
-    })
-  });
-  let menuSize = countOfGroups * 50 + countOfOptions * 50 + 20;
-
-
-  // Array of Filters
-
-  if (filterSortSelectorVisible) {
-    visibility.value = withSpring(menuSize);
-    sharedOpacity.value = withTiming(1);
-  } else {
-    visibility.value = withTiming(0);
-    sharedOpacity.value = withTiming(0);
-  }
-
-  const animatedFilterStyle = useAnimatedStyle(() => {
-    return {
-      height: visibility.value,
-      opacity: sharedOpacity.value,
-    };
-  });
-
   return (
     <Animated.View
-      style={[
-        {
-          position: "absolute",
-          backgroundColor: "wheat",
-          top: 127,
-          width: "50%",
-          borderWidth: 1,
-          zIndex: 1,
-          borderBottomLeftRadius: 10,
-          borderBottomRightRadius: 10,
-        },
-        animatedFilterStyle,
-      ]}
-    >
       
-      <View>
-        {Object.keys(userProfile.JSObjOfAllSelections).map((filter, filterIndex) => (
-          <View key={filter} style={styles.filterGroups}>
-            <Text style={styles.filterHeading}>{filter}</Text>
+     layout={Layout.duration(900)}
+    
+      style={[{
+        position: "absolute",
+        backgroundColor: "#f5ecc9",
+        top: 117,
+        width: "50%",
+       
+        zIndex: 1,
+        borderBottomLeftRadius: 10,
+        borderBottomRightRadius: 10,
+        overflow: "hidden",
+        opacity: 0.9,
+      }, animatedStyles]}
+    >
+      {filterSortSelectorVisible && (
+        <View>
+          {Object.keys(userProfile.JSObjOfAllSelections).map(
+            (filter, filterIndex) => (
+              <View key={filter} style={styles.filterGroups}>
+                <Animated.Text 
+               
+                exiting = {LinearTransition.delay(1000)}
+                
+                style={styles.filterHeading}>{filter}</Animated.Text>
 
-            <View>
-              {Object.keys(userProfile.JSObjOfAllSelections[filter]).map(
-                (option, optionIndex) => (
-                  <Pressable
-                    onPress={() => {
-                      setFilterSortSelectorVisible(false);
-                      setUserProfile({
-                        ...userProfile,
-                        currentFilterIndex: filterIndex,
-                        currentFilterName: filter,
-                        currentOptionIndex: optionIndex,
-                        currentOptionName: option
-                      })}}
-                    key={option}
-                  >
-                    <Text style={styles.options}>{option}</Text>
-                  </Pressable>
-                )
-              )}
-            </View>
-          </View>
-        ))}
-      </View>
+                <View>
+                  {Object.keys(userProfile.JSObjOfAllSelections[filter]).map(
+                    (option, optionIndex) => (
+                      <Pressable
+                        onPress={() => {
+                          setFilterSortSelectorVisible(false);
+
+                          setUserProfile({
+                            ...userProfile,
+                            currentFilterIndex: filterIndex,
+                            currentFilterName: filter,
+                            currentOptionIndex: optionIndex,
+                            currentOptionName: option,
+                          });
+                        }}
+                        key={option}
+                      >
+                        <Animated.Text 
+                        exiting={LinearTransition.delay(1000)}
+                        
+                        style={styles.options}>{option}</Animated.Text>
+                      </Pressable>
+                    )
+                  )}
+                </View>
+              </View>
+            )
+          )}
+
+          <Pressable
+            onPress={() => {
+              setFilterSortSelectorVisible(false);
+
+              setUserProfile({
+                ...userProfile,
+                currentFilterIndex: null,
+                currentFilterName: null,
+                currentOptionIndex: null,
+                currentOptionName: null,
+              });
+            }}
+            
+          >
+            <Text style={styles.options}>Clear all filters</Text>
+          </Pressable>
+          <Text>Experimental Text</Text>
+        </View>
+      )}
     </Animated.View>
   );
 };
