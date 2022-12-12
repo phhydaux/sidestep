@@ -47,6 +47,8 @@ export default function RegistrySelector({ navigation }) {
             currentFilterName: null,
             currentOptionIndex: null,
             currentOptionName: null,
+            sortOptionName: null,
+            sortOptionIndex: null,
             newflag: false,
           });
 

@@ -1,18 +1,21 @@
-import React, { useRef, useState, useCallback } from "react";
+import React, { useRef, useState, useCallback, useContext } from "react";
 import { Ionicons } from "@expo/vector-icons";
 import {
   SafeAreaView,
   ScrollView,
   StyleSheet,
   FlatList,
+  
   View,
   Text,
   Share,
   useWindowDimensions,
   Pressable,
+  
 } from "react-native";
+import { AuthenticatedUserContext } from "../navigators/AuthenticatedUserProvider";
 
-import Registry from "../dataStore/dataSource";
+
 import RiskLevelBadge from "../components/RiskLevelBadge";
 import NoteModal from "../components/NoteModal";
 import PageEditMenuModal from "../components/PageEditMenuModal";
@@ -25,9 +28,11 @@ const EntryDetailScreen = ({ navigation, route }) => {
   // position.  By changing startAt to the current position, when useEffect
   // fires it does not affect the scroll postion.
   var startAt = useRef(route.params.index);
+  const { userProfile, setUserProfile } = useContext(AuthenticatedUserContext);
 
   const entriesInOrder = displayOrder.map((value) => {
-    return Registry.entries[value];
+ 
+return userProfile.currentRegistryData["Pages"][value];
   });
 
   const displayedEntryID = useRef();
@@ -47,17 +52,13 @@ const EntryDetailScreen = ({ navigation, route }) => {
 
   const { width: windowWidth } = useWindowDimensions();
 
-  // const onViewableItemsChanged = useRef(({ viewableItems, changed }) => {
-  //   displayedEntryID.current = viewableItems[0].item.InternalID;
-  //   startAt.current = displayedEntryID.current;
+ 
 
-  // });
 
   const onViewCallBack = useCallback(({viewableItems}) => {
     displayedEntryID.current = viewableItems[0].item.InternalID;
     setCurrentEntry(viewableItems[0].item);
-    var norman = viewableItems[0].item;
-    var fred = currentEntry.Title;
+   
    
   }, []);
 
@@ -66,21 +67,18 @@ const EntryDetailScreen = ({ navigation, route }) => {
     waitForInteraction: false,
   });
 
-  const onMomentumScrollEnd = () => {
-    if (displayedEntryID.current == 2) {
-      setFlag("red");
-    } else {
-      setFlag("black");
-    }
-  };
+
+ 
+
+
 
   const onLayout = () => {
-    var offset = windowWidth * startAt.current;
-    ref.scrollToOffset({ offset: offset, animated: false });
+   var offset = windowWidth * startAt.current;
+   ref.scrollToOffset({ offset: offset, animated: false });
   };
 
   // the renderItem function is used by FlatList
-  const renderItem = ({ item }) => {
+  const renderItem = ({ item , index}) => {
     return (
       <View style={{ width: windowWidth }} key={item.InternalID}>
         {/* Header panel at the top of the screen */}
@@ -89,7 +87,7 @@ const EntryDetailScreen = ({ navigation, route }) => {
             <View style={styles.badge}>
               <RiskLevelBadge level={item.RiskLevel} />
             </View>
-            <Text style={styles.label}>{item.Title}</Text>
+            <Text style={styles.label}>{item.Title} {index}</Text>
           </View>
           <View style={styles.secondrow}>
             <Text style={styles.RefID}>Ref ID: {item.RiskID}</Text>
@@ -142,11 +140,11 @@ const EntryDetailScreen = ({ navigation, route }) => {
     );
   };
 
+
   return (
     <SafeAreaView style={styles.container}>
       <View style={styles.scrollContainer}>
         <FlatList
-          onMomentumScrollEnd={() => onMomentumScrollEnd()}
           horizontal={true}
           data={entriesInOrder}
           renderItem={renderItem}

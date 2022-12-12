@@ -14,38 +14,26 @@ import {
 import Registry from "../dataStore/dataSource";
 import { SafeAreaView } from "react-native-safe-area-context";
 import EntrySummaryCard from "../components/EntrySummaryCard";
-import FilterAndSortSelector from "../components/FilterAndSortSelector";
-import SortOrderSelector from "../components/DefunctSortOrderSelector";
+import FilterSelector from "../components/FilterSelector";
+import SortSelector from "../components/SortSelector";
 
 const EntryListScreen = ({ navigation, route }) => {
   const { userProfile, setUserProfile } = useContext(AuthenticatedUserContext);
   const [modalVisible, setModalVisible] = useState(false);
-  const [filterSortSelectorVisible, setFilterSortSelectorVisible] = useState(false);
-  const [option, setOption] = useState(null);
+  const [filterSelectorVisible, setFilterSelectorVisible] = useState(false);
+  const [sortSelectorVisible, setSortSelectorVisible] = useState(false);
+ 
   const [displayOrder, setDisplayOrder] = useState(
-    Registry.entries.map(({ InternalID }) => InternalID)
+    Object.keys(userProfile.currentRegistryData["Pages"])
   );
+
+  console.log();
+
 
   const { windowHeight, windowWidth } = useWindowDimensions();
   const halfWindowWidth = windowWidth / 2;
 
-  // if (route.params.modalVisible == 'true') setModalVisible('true');
-  // This is the starting screen of my experiment.  This is going to be the list of risks
-  // It must have a list of risks as an array.
-  // 'norman' is the risk ID, passed to the details screen(s)
-  // Lets make life easy by starting at 0
-
-  //There will be some sort of function that selects and orders the risks to be displayed.
-  // Until I have that function, I will assume that we list all risks in an arbitrary order,
-  // probably the order they are recorded in the data store.  We will accept that as an
-  // array of the internal entry reference numbers.
-
-  //let displayOrder = [0, 1, 2, 3];
-
-  // let selection = route.params.selectionOption;
-  let answer;
-    if (filterSortSelectorVisible) {answer = "true"} else {answer = "false"};
-
+  
 
   return (
     <View style={{ flex: 1 }}>
@@ -63,12 +51,9 @@ const EntryListScreen = ({ navigation, route }) => {
             style={styles.leftButton}
           />
           <View style={styles.twoLinesTogether}>
-           
-            
-              <Text style={{ fontWeight: "normal", fontSize: 15 }}>
+            <Text style={{ fontWeight: "normal", fontSize: 15 }}>
               {userProfile.currentRegistryName}
-              </Text>
-            
+            </Text>
           </View>
           <Ionicons
             name="list"
@@ -80,62 +65,66 @@ const EntryListScreen = ({ navigation, route }) => {
         </View>
       </Pressable>
 
-      <SortOrderSelector
+      {/* <SortOrderSelector
         modalVisible={modalVisible}
         setModalVisible={setModalVisible}
         option={option}
         setOption={setOption}
         displayOrder={displayOrder}
         setDisplayOrder={setDisplayOrder}
-      />
+      /> */}
       <View
         style={{
           flexDirection: "row",
-          justifyContent: "space-evenly"
+          justifyContent: "space-evenly",
         }}
       >
-        
-         
-          <Pressable  
-          onPress = {()=>setFilterSortSelectorVisible(true)}
+        <Pressable
+          onPress={() => setFilterSelectorVisible(true)}
           style={{
-              width: "50%",
-              borderWidth: 1,
-              flexDirection: "row",
-              borderColor: "black",
-              alignContent: "center",
-              justifyContent: "left",
-              alignItems: "center",
-            
-              
-            }}>
-            <Ionicons
-              name="funnel-outline"
-              size={24}
-              color="black"
-              onPress={() => setModalVisible(true)}
-              style={{paddingRight: 5}}
-            />
-           {/*   */}
-            {(userProfile.currentFilterName != null) && (
-<View>
-
-<View>
-<Text style={{ color: "#777777" }}>{userProfile.currentFilterName}</Text>
-</View>
-<View>
-<Text style={{ color: "black" , fontWeight: "bold", marginRight: 30,}}>{userProfile.currentOptionName}</Text>
-</View>
-
-</View>
-
-
+            width: "50%",
+            borderWidth: 1,
+            flexDirection: "row",
+            borderColor: "black",
+            alignContent: "center",
+            justifyContent: "left",
+            alignItems: "center",
+          }}
+        >
+          <Ionicons
+            name="funnel-outline"
+            size={24}
+            color="black"
+            style={{ paddingRight: 5 }}
+          />
+        
+          {userProfile.currentFilterName != null && (
+            <View>
+              <View>
+                <Text style={{ color: "#777777" }}>
+                  {userProfile.currentFilterName}
+                </Text>
+              </View>
+              <View>
+                <Text
+                  style={{
+                    color: "black",
+                    fontWeight: "bold",
+                    marginRight: 30,
+                  }}
+                >
+                  {userProfile.currentOptionName}
+                </Text>
+              </View>
+            </View>
           )}
-          {(userProfile.currentFilterName === null) && (
-            <Text style={{ color: "#777777" }}>  No current filter</Text>)}
-            </Pressable>
-         <Pressable
-         style={{
+          {userProfile.currentFilterName === null && (
+            <Text style={{ color: "#777777" }}> No current filter</Text>
+          )}
+        </Pressable>
+        <Pressable
+          onPress={() => setSortSelectorVisible(true)}
+          style={{
             width: "50%",
             flexDirection: "row",
             borderWidth: 1,
@@ -143,28 +132,35 @@ const EntryListScreen = ({ navigation, route }) => {
             justifyContent: "center",
             alignItems: "center",
             padding: 10,
-          }}>
+          }}
+        >
           <Ionicons
             name="swap-vertical-outline"
             size={24}
             color="black"
-            onPress={() => setModalVisible(true)}
             style={{}}
           />
-     
 
-          {(userProfile.currentFilterName != null) && (
-          <Text style={{ color: "#777777" }}>Status: {answer}+{userProfile.currentFilterName}</Text>)}
-          {(userProfile.currentFilterName === null) && (
-            <Text style={{ color: "#777777" }}> Status: {answer}</Text>)}
-          </Pressable>
-        
+          {userProfile.sortOptionName != null && (
+            <Text style={{ color: "black" }}>{userProfile.sortOptionName}</Text>
+          )}
+          {userProfile.sortOptionName === null && (
+            <Text style={{ color: "#777777" }}> No sort option selected</Text>
+          )}
+        </Pressable>
       </View>
-
-      <FilterAndSortSelector
-      filterSortSelectorVisible={filterSortSelectorVisible}
-      setFilterSortSelectorVisible={setFilterSortSelectorVisible}
-      />
+      {filterSelectorVisible && (
+        <FilterSelector
+          filterSelectorVisible={filterSelectorVisible}
+          setFilterSelectorVisible={setFilterSelectorVisible}
+        />
+      )}
+      {sortSelectorVisible && (
+        <SortSelector
+          sortSelectorVisible={sortSelectorVisible}
+          setSortSelectorVisible={setSortSelectorVisible}
+        />
+      )}
 
       <ScrollView>
         {displayOrder.map((entryNum, index, dispOrder) => (
@@ -211,10 +207,10 @@ const EntryListScreen = ({ navigation, route }) => {
           <Ionicons name="chatbubble-outline" size={25} color={"black"} />
           <Text>Comment</Text>
         </View>
-        <View style={{ alignItems: "center" }}>
+        <Pressable style={{ alignItems: "center" }} onPress={() => {setPageEditMenuModalVisible(true);}}>
           <Ionicons name="ellipsis-horizontal" size={25} color={"black"} />
           <Text>More</Text>
-        </View>
+        </Pressable>
       </View>
     </View>
   );

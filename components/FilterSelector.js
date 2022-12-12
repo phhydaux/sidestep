@@ -1,80 +1,117 @@
-import React, { useState } from "react";
-import { Modal, StyleSheet, Text, View, Pressable } from "react-native";
+import React, {  useContext } from "react";
+import { StyleSheet, Text, View, Pressable } from "react-native";
 
-import Registry from "../dataStore/dataSource";
-import RadioButton from "./RadioButton";
+import { AuthenticatedUserContext } from "../navigators/AuthenticatedUserProvider";
+
+import Animated, {
+  Layout,
+  FadeOutUp,
+  ZoomIn,
+} from "react-native-reanimated";
 
 const FilterSelector = ({
-  FilterModalVisible,
-  setFilterModalVisible,
-  currentFilter,
-  setCurrentFilter,
-  availableFilters,
+  filterSelectorVisible,
+  setFilterSelectorVisible,
 }) => {
+  const { userProfile, setUserProfile } = useContext(AuthenticatedUserContext);
+
+
+  let availableFilters = Object.keys(userProfile.JSObjOfAllSelections);
+
   return (
-    <Modal
-      animationType="fade"
-      transparent={true}
-      visible={FilterModalVisible}
-      presentationStyle="overFullScreen"
-      onRequestClose={() => {
-        Alert.alert("Another Modal has been closed.");
-        setFilterModalVisible(!FilterModalVisible);
-      }}
-    >
-      <Pressable
-        onPress={() => {
-          setFilterModalVisible(!FilterModalVisible);
+    <Animated.View
+      layout={Layout.duration(300)}
+      entering={ZoomIn.duration(300)}
+      exiting={FadeOutUp.duration(300)}
+      style={
+        {
+          position: "absolute",
+          backgroundColor: "#f5ecc9",
+          top: 125,
+          width: "50%",
+          zIndex: 1,
+          borderRadius: 15,
+          overflow: "hidden",
+          opacity: 0.9,
         }}
-        style={{ flex: 1 }}
-      >
-        <View
-          style={{
-            flex: 1,
-            alignItems: "center",
-            justifyContent: "center",
-            backgroundColor: "rgba(0,0,0,0.5)",
-          }}
-        >
-          <View
-            style={{
-              padding: 15,
-              backgroundColor: "white",
-              borderRadius: 20,
+    >
+     
+        <View>
+          {availableFilters.map(
+            (filter, filterIndex) => (
+              <View key={filter} style={styles.filterGroups}>
+                <Text
+                  style={styles.filterHeading}
+                >
+                  {filter}
+                </Text>
+
+                <View>
+                  {Object.keys(userProfile.JSObjOfAllSelections[filter]).map(
+                    (option, optionIndex) => (
+                      <Pressable
+                        onPress={() => {
+                          setFilterSelectorVisible(false);
+
+                          setUserProfile({
+                            ...userProfile,
+                            currentFilterIndex: filterIndex,
+                            currentFilterName: filter,
+                            currentOptionIndex: optionIndex,
+                            currentOptionName: option,
+                          });
+                        }}
+                        key={option}
+                      >
+                        <Text style={styles.options}>
+                          {option}
+                        </Text>
+                      </Pressable>
+                    )
+                  )}
+                </View>
+              </View>
+            )
+          )}
+
+          <Pressable
+            onPress={() => {
+              setFilterSelectorVisible(false);
+
+              setUserProfile({
+                ...userProfile,
+                currentFilterIndex: null,
+                currentFilterName: null,
+                currentOptionIndex: null,
+                currentOptionName: null,
+              });
             }}
           >
-            <View style={{ flexDirection: "column" }}>
-              <Text>Display this registry, divided by:</Text>
-
-              {availableFilters.map((filter) => (
-                <Pressable
-                  onPress={() => {
-                    setCurrentFilter(filter);
-                    setFilterModalVisible(!FilterModalVisible);
-                  }}
-                  key={filter}
-                >
-                  <View style={styles.FilterView}>
-                    <Text style={styles.filter}>{filter}</Text>
-                  </View>
-                </Pressable>
-              ))}
-            </View>
-          </View>
+            <Text style={styles.options}>Clear all filters</Text>
+          </Pressable>
+          <Text>Experimental Text</Text>
         </View>
-      </Pressable>
-    </Modal>
+      
+    </Animated.View>
   );
 };
 
 export default FilterSelector;
 
 const styles = StyleSheet.create({
-  filter: {
-    fontSize: 20,
-    fontWeight: "bold",
-    padding: 20,
-  },
-  FilterView: {},
   paragraph: {},
+  filterGroups: {
+    flexGrow: 1,
+    border: 1,
+  },
+  filterHeading: {
+    fontSize: 15,
+    fontWeight: "bold",
+    padding: 5,
+  },
+  options: {
+    fontSize: 22,
+    padding: 10,
+    color: "blue",
+  },
 });

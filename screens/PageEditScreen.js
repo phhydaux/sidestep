@@ -16,6 +16,7 @@ const PageEditScreen = ({
   displayedEntry,
 }) => {
   const [text, onChangeText] = useState();
+  const { userProfile, setUserProfile } = useContext(AuthenticatedUserContext);
 
   const resetText = () => {
     onChangeText();

@@ -1,23 +1,27 @@
-import React from "react";
+import React, { useState, useContext } from "react";
 import { StyleSheet, Text, View } from "react-native";
 import Registry from "../dataStore/dataSource";
 import RiskLevelBadge from "./RiskLevelBadge";
+import { AuthenticatedUserContext } from "../navigators/AuthenticatedUserProvider";
 
 const EntrySummaryCard = ({ currentEntryNum }) => {
-  const currentEntry = Registry.entries[currentEntryNum];
+    const { userProfile, setUserProfile } = useContext(AuthenticatedUserContext);
+
+//  const currentEntry = Registry.entries[currentEntryNum];
+const currentEntry = userProfile.currentRegistryData["Pages"][currentEntryNum];
 
 
   return (
     <View style={styles.card}>
       <View style={styles.toprow}>
         <View style={styles.badge}>
-          <RiskLevelBadge level={currentEntry.RiskLevel} />
+          <RiskLevelBadge level={currentEntry["RiskLevel"]} />
         </View>
-        <Text style={styles.label}>{currentEntry.Title}</Text>
+        <Text style={styles.label}>{currentEntry["Title"]}</Text>
       </View>
 
       <View style={styles.secondrow}>
-        <Text style={styles.RefID}>Ref ID: {currentEntry.RiskID}</Text>
+        <Text style={styles.RefID}>Ref ID: {currentEntry["RiskID"]}</Text>
       </View>
     </View>
   );

@@ -1,16 +1,34 @@
-import React, { useState } from "react";
+import React, { useState, useContext } from "react";
 import { Modal, StyleSheet, Text, View, Pressable } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
+import { ref, push, set } from "firebase/database";
+import { database } from "../firebaseConfig";
+import { AuthenticatedUserContext } from "../navigators/AuthenticatedUserProvider";
 
-import Registry from "../dataStore/dataSource";
-import RadioButton from "./RadioButton";
+
 
 const PageEditMenuModal = ({
   pageEditMenuModalVisible,
   setPageEditMenuModalVisible,
   displayedEntry,
 }) => {
- 
+  const { userProfile, setUserProfile } = useContext(AuthenticatedUserContext);
+
+  const handleAddEntry = () => {
+
+    // database is database
+    // Registry is at database/currentRegistryID
+    let newEntryRef = push(
+      ref(database, 
+        "Registries/"+userProfile.currentRegistryID+"/Pages"));
+set(newEntryRef,{Title: "Fred3"});
+    newEntryRef = push(
+      ref(database, 
+        "Registries/"+userProfile.currentRegistryID+"/Pages"));
+set(newEntryRef,{Title: "Fred4"});
+
+
+  }
 
   return (
     <Modal
@@ -61,7 +79,7 @@ const PageEditMenuModal = ({
             <Text>Delete this Risk</Text>
           </View>
         </Pressable>
-        <Pressable onPress={() => {}}>
+        <Pressable onPress={() => {handleAddEntry()}}>
           <View style={{ flexDirection: "row" }}>
             <Ionicons name="add-circle-outline" size={25} color="black" />
             <Text>Add a new Risk</Text>
