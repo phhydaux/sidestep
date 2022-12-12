@@ -29,9 +29,9 @@ export default function RegistrySelector({ navigation }) {
           const currentRegistryIndexCardFormat =
             currentRegistryData["Meta"]["IndexCardFormat"];
           const currentRegistryOwner = currentRegistryData["Meta"]["Owner"];
-          const JSObjOfAllSelections = currentRegistryData["Meta"]["Selectors"];
-          const arrayOfSelectors = Object.keys(
-            currentRegistryData["Meta"]["Selectors"]
+          const JSObjOfAllSelections = currentRegistryData["Meta"]["Filters"];
+          const arrayOfFilters = Object.keys(
+            currentRegistryData["Meta"]["Filters"]
           );
 
           setUserProfile({
@@ -42,7 +42,7 @@ export default function RegistrySelector({ navigation }) {
             currentRegistryIndexCardFormat: currentRegistryIndexCardFormat,
             currentRegistryOwner: currentRegistryOwner,
             JSObjOfAllSelections: JSObjOfAllSelections,
-            arrayOfSelectors: arrayOfSelectors,
+            arrayOfFilters: arrayOfFilters,
             currentFilterIndex: null,
             currentFilterName: null,
             currentOptionIndex: null,

@@ -1,144 +1,292 @@
 import { ref, push, set } from "firebase/database";
 import { database } from "../firebaseConfig";
-import React, { useState, useRef } from "react";
+import React, { useState, useContext } from "react";
+import { AuthenticatedUserContext } from "../navigators/AuthenticatedUserProvider";
 import {
   Modal,
   StyleSheet,
   Text,
   View,
+  ScrollView,
   Pressable,
   TextInput,
 } from "react-native";
+import { Ionicons } from "@expo/vector-icons";
 
-const PageEditScreen = ({
-  PageEditScreenVisible,
-  setPageEditScreenVisible,
-  displayedEntry,
-}) => {
-  const [text, onChangeText] = useState();
+import RiskLevelBadge from "../components/RiskLevelBadge";
+import { SafeAreaView } from "react-native-safe-area-context";
+import EditTitleModal from "../components/EditTitleModal";
+import EntryDetailScreen from "./EntryDetailScreen";
+
+const PageEditScreen = ({ navigation, route }) => {
   const { userProfile, setUserProfile } = useContext(AuthenticatedUserContext);
+  const [editTitleModalVisible, setEditTitleModalVisible] = useState(false);
+  const [pageBeingEdited, setPageBeingEdited] = useState(
+    userProfile.currentRegistryData["Pages"][route.params.entryToEdit]
+  );
 
-  const resetText = () => {
-    onChangeText();
+  const handleSaveAll = () => {
+    const pageRef = ref(
+      database,
+      "Registries/" +
+        userProfile.currentRegistryID +
+        "/Pages/" +
+        route.params.entryToEdit
+    );
+
+    set(pageRef, pageBeingEdited);
+    navigation.navigate("EntryListScreen");
   };
 
-  const postComment = () => {
-    const Author = "Logged in User";
-    const commentDate = "today";
-    const commentStatus = "open";
-    const commentText = text;
-
-    const db = database;
-    const postListRef = ref(db, "Registries");
-    const newPostRef = push(postListRef);
-    set(newPostRef, {
-      Author: "Kevin",
-      Reader: "John",
-      DAytime: {
-        commentDate: "wednesday",
-        problem: "serious",
-        fixtime: "never",
-      },
-      Status: { commentStatus },
-      Text: text,
-    });
-
-    resetText();
+  const handleEditTitle = () => {
+    setEditTitleModalVisible(true);
   };
 
   return (
-    <Modal
-      animationType="slide"
-      onShow={resetText}
-      transparent={false}
-      visible={PageEditScreenVisible}
-      presentationStyle="formSheet"
-      onRequestClose={() => {
-        resetText();
-        setPageEditScreenVisible(!PageEditMenuVisible);
-      }}
-    >
-      <View
-        style={{
-          flexDirection: "row",
-          justifyContent: "space-between",
-          height: 50,
-          width: "100%",
-          alignItems: "center",
-        }}
-      >
+    <SafeAreaView>
+      <View style={styles.header}>
         <Pressable
-          onPress={() => {
-            resetText();
-            setPageEditMenuVisible(!PageEditMenuVisible);
-          }}
+          style={styles.leftbutton}
+          onPress={() => navigation.goBack()}
         >
-          <Text
-            style={{
-              fontSize: 18,
-              padding: 10,
-              color: "blue",
-            }}
-          >
-            Cancel
-          </Text>
+          <Ionicons name="chevron-back-sharp" size={24} color="blue" />
+          <Text style={{ fontSize: 18, color: "blue" }}>Cancel</Text>
         </Pressable>
-        <Text>New Entry</Text>
-        <Pressable
-          onPress={() => {
-            postComment();
-          }}
-        >
-          <Text
-            style={{
-              fontSize: 18,
-              padding: 10,
-              backgroundColor: "pink",
-            }}
-          >
-            Save
-          </Text>
+        <View style={styles.headercenter}>
+          <Text style={{ fontSize: 18, color: "red" }}>Edit Mode</Text>
+          <Text style={{ fontSize: 10, color: "red" }}>Tap to edit</Text>
+        </View>
+        <Pressable style={styles.rightbutton} onPress={() => handleSaveAll()}>
+          <Text style={{ fontSize: 18, color: "blue" }}>Save </Text>
+          <Ionicons name="save-outline" size={24} color="blue" />
         </Pressable>
-      </View>
-      {/* End of Header, start of the body of the page  */}
-      <View style={{ flexDirection: "row" }}>
-        <Text>Commenting on: </Text>
-        <Text style={{ fontWeight: "bold", fontSize: 15 }}>
-          {displayedEntry.Title}{" "}
-        </Text>
       </View>
 
-      <View
-        style={{
-          flex: 1,
-          alignItems: "flex-start",
-          justifyContent: "flex-start",
-          backgroundColor: "#cdcdcd",
-        }}
-      >
-        <TextInput
-          style={styles.input}
-          onChangeText={onChangeText}
-          value={text}
-          placeholder={"Enter comments"}
-          autoFocus={true}
-          multiline={true}
-          textAlignVertical="top"
-          keyboardType="default"
-        />
+      <View style={{}}>
+        {/* Header panel at the top of the screen */}
+        <View style={styles.toppanel}>
+          <View style={styles.toprow}>
+            <View style={styles.badge}>
+              <RiskLevelBadge level={pageBeingEdited.RiskLevel} />
+            </View>
+            <Pressable style={{ flex: 1 }} onPress={() => handleEditTitle()}>
+              <Text style={styles.label}>{pageBeingEdited["Title"]}</Text>
+            </Pressable>
+          </View>
+          <View style={styles.secondrow}>
+            <Text style={styles.RefID}>Ref ID: {pageBeingEdited.RiskID}</Text>
+          </View>
+        </View>
+
+        {/* Main Body of the Screen - scrolls vertically if too long */}
+
+        <ScrollView>
+          <View style={styles.separator} />
+          <View style={styles.bar}>
+            <View style={styles.leftspace} />
+            <View style={styles.tab}>
+              <Text>Outcome Description</Text>
+            </View>
+            <View style={styles.rightspace} />
+          </View>
+
+          <View style={styles.section}>
+            <Text style={styles.sectionOne}>{pageBeingEdited.Outcome}</Text>
+          </View>
+
+          <View style={styles.bar}>
+            <View style={styles.leftspace} />
+            <View style={styles.tab}>
+              <Text>Controls in place</Text>
+            </View>
+            <View style={styles.rightspace} />
+          </View>
+
+          <View style={styles.section}>
+            <Text style={styles.sectionOne}>{pageBeingEdited.Controls}</Text>
+          </View>
+          <View style={styles.section}>
+            <Text style={styles.sectionOne}>
+              Last Review: {pageBeingEdited.LastRev}
+            </Text>
+            <Text> </Text>
+            <Text style={styles.sectionOne}>
+              Next Review: {pageBeingEdited.NextRev}
+            </Text>
+          </View>
+          <View
+            style={styles.separator}
+            lightColor="#eee"
+            darkColor="rgba(255,255,255,1)"
+          />
+
+          <View style={{ height: 300 }}>
+            <Text></Text>
+          </View>
+        </ScrollView>
       </View>
-    </Modal>
+      <EditTitleModal
+        editTitleModalVisible={editTitleModalVisible}
+        setEditTitleModalVisible={setEditTitleModalVisible}
+        pageBeingEdited={pageBeingEdited}
+        setPageBeingEdited={setPageBeingEdited}
+      />
+    </SafeAreaView>
   );
 };
 
 export default PageEditScreen;
 
 const styles = StyleSheet.create({
-  paragraph: {},
-  input: {
-    fontSize: 20,
-    margin: 12,
-    borderWidth: 0,
+  badge: {
+    width: 110,
+  },
+  bar: {
+    flex: 0,
+    flexDirection: "row",
+    paddingLeft: 5,
+    paddingRight: 5,
+    paddingBottom: 0,
+    lineHeight: 10,
+    minHeight: 0,
+    borderBottomWidth: 0,
+  },
+  container: {
+    flex: 1,
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  scrollContainer: {
+    flex: 1,
+    height: 300,
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  card: {
+    flex: 1,
+    marginVertical: 4,
+    marginHorizontal: 16,
+    borderRadius: 5,
+    overflow: "hidden",
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  header: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+  },
+  headercenter: {
+    flexDirection: "column",
+    justifyItems: "center",
+    alignItems: "center",
+  },
+  label: {
+    flexGrow: 1,
+    fontWeight: "bold",
+    paddingTop: 15,
+  },
+  leftbutton: {
+    flexDirection: "row",
+    alignItems: "center",
+    width: 80,
+  },
+  leftspace: {
+    maxWidth: 10,
+    height: 20,
+    flex: 1,
+    borderBottomWidth: 1,
+  },
+  rightbutton: {
+    flexDirection: "row",
+    alignItems: "center",
+    width: 80,
+  },
+  rightspace: {
+    flex: 1,
+    width: 20,
+    height: 20,
+    borderLeftWidth: 0,
+    borderBottomWidth: 1,
+    borderBottomStartRadius: 0,
+
+    backgroundColor: "#eee",
+  },
+  secondrow: {
+    paddingLeft: 15,
+    paddingBottom: 15,
+  },
+  section: {
     padding: 10,
+    paddingBottom: 40,
+  },
+  sectionOne: {
+    borderRadius: 10,
+    paddingLeft: 10,
+    paddingRight: 10,
+    borderBottomColor: "#000000",
+    borderBottomWidth: 0,
+  },
+  separator: {
+    height: 5,
+    width: "100%",
+    backgroundColor: "#eee",
+  },
+  tab: {
+    borderRadius: 10,
+    paddingLeft: 10,
+    paddingRight: 10,
+    borderBottomColor: "#000000",
+    borderBottomWidth: 0,
+    borderTopWidth: 1,
+    borderLeftWidth: 1,
+    borderRightWidth: 1,
+    borderBottomEndRadius: 0,
+    borderBottomStartRadius: 0,
+    marginBottom: 0,
+    height: 20,
+  },
+  textContainer: {
+    backgroundColor: "rgba(0,0,0, 0.7)",
+    paddingHorizontal: 24,
+    paddingVertical: 8,
+    borderRadius: 5,
+  },
+  toppanel: {
+    paddingLeft: 0,
+    backgroundColor: "#cccccc",
+    height: 100,
+    width: "100%",
+  },
+  toprow: {
+    flex: 1,
+    padding: 5,
+    flexDirection: "row",
+    justifyContent: "flex-start",
+    alignItems: "flex-start",
+  },
+  infoText: {
+    color: "white",
+    fontSize: 16,
+    fontWeight: "bold",
+  },
+  navbar: {
+    backgroundColor: "white",
+    height: 50,
+    width: "100%",
+    flexDirection: "row",
+    justifyContent: "space-around",
+    alignItems: "center",
+  },
+  normalDot: {
+    height: 8,
+    width: 8,
+    borderRadius: 4,
+    backgroundColor: "silver",
+    marginHorizontal: 4,
+  },
+  indicatorContainer: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "center",
   },
 });

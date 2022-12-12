@@ -4,7 +4,6 @@ import { Ionicons } from "@expo/vector-icons";
 
 
 import {
-  TransitionSpecs,
   CardStyleInterpolators,
 } from "@react-navigation/stack";
 import { createStackNavigator } from "@react-navigation/stack";
@@ -12,9 +11,8 @@ import { createStackNavigator } from "@react-navigation/stack";
 
 import EntryListScreen from "../screens/EntryListScreen";
 import EntryDetailScreen from "../screens/EntryDetailScreen";
-
-import SectionSelectionScreen from "../screens/SectionSelectionScreen";
 import MyHomeScreen from "../screens/MyHomeScreen";
+import PageEditScreen from "../screens/PageEditScreen";
 
 const Stack = createStackNavigator();
 
@@ -31,16 +29,16 @@ export default function EntryStackNavigator() {
         }}
       />
 
-      {/* <Stack.Screen
-        name="Section"
-        component={SectionSelectionScreen}
-        options={{
-          headerShown: false,
-        }}
-      /> */}
       <Stack.Screen
         name="EntryListScreen"
         component={EntryListScreen}
+        options={{
+          headerShown: false,
+        }}
+      />
+       <Stack.Screen
+        name="Page Edit"
+        component={PageEditScreen}
         options={{
           headerShown: false,
         }}

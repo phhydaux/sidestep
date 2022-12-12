@@ -87,7 +87,7 @@ const EntryListScreen = ({ navigation, route }) => {
             flexDirection: "row",
             borderColor: "black",
             alignContent: "center",
-            justifyContent: "left",
+            justifyContent: "center",
             alignItems: "center",
           }}
         >
@@ -162,7 +162,7 @@ const EntryListScreen = ({ navigation, route }) => {
         />
       )}
 
-      <ScrollView>
+       <ScrollView>
         {displayOrder.map((entryNum, index, dispOrder) => (
           <View key={entryNum}>
             <Pressable
@@ -178,7 +178,7 @@ const EntryListScreen = ({ navigation, route }) => {
             </Pressable>
           </View>
         ))}
-      </ScrollView>
+      </ScrollView> 
 
       <View style={styles.navbar}>
         <Pressable

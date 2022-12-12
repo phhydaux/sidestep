@@ -1,6 +1,6 @@
-import { getDatabase, ref, push, set } from "firebase/database";
+import { ref, push, set } from "firebase/database";
 import { database } from "../firebaseConfig";
-import React, { useState, useRef } from "react";
+import React, { useState, useContext} from "react";
 import {
   Modal,
   StyleSheet,
@@ -9,7 +9,8 @@ import {
   Pressable,
   TextInput,
 } from "react-native";
-import Registry from "../dataStore/dataSource";
+import { AuthenticatedUserContext } from "../navigators/AuthenticatedUserProvider";
+
 
 const NoteModal = ({
   noteModalVisible,
@@ -17,6 +18,17 @@ const NoteModal = ({
   displayedEntry,
 }) => {
   const [text, onChangeText] = useState();
+   const { userProfile, setUserProfile } = useContext(AuthenticatedUserContext);
+
+   const currentEntry = userProfile.currentRegistryData["Pages"];
+
+// console.log("dribble");
+// console.log(displayedEntry);
+// console.log(currentEntry[displayedEntry]);
+// console.log(currentEntry[displayedEntry]["Title"]);
+
+  
+
 
   const resetText = () => {
     onChangeText();
@@ -29,7 +41,7 @@ const NoteModal = ({
     const commentText = text;
 
     const db = database;
-    const postListRef = ref(db, "Registries");
+    const postListRef = ref(db, "Registries/"+userProfile.currentRegistryID+"/Pages/"+displayedEntry+"/Addendums/Filenote");
     const newPostRef = push(postListRef);
     set(newPostRef, {
       Author: "Kevin",
@@ -102,7 +114,8 @@ const NoteModal = ({
       <View style={{ flexDirection: "row" }}>
         <Text>Commenting on: </Text>
         <Text style={{ fontWeight: "bold", fontSize: 15 }}>
-          {displayedEntry.Title}{" "}
+        
+        {currentEntry.Title}
         </Text>
       </View>
 

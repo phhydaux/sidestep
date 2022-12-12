@@ -8,7 +8,7 @@ import Animated, { Layout, FadeOutUp, ZoomIn } from "react-native-reanimated";
 const SortSelector = ({ sortSelectorVisible, setSortSelectorVisible }) => {
   const { userProfile, setUserProfile } = useContext(AuthenticatedUserContext);
 
-  let availableCriteria = ["Due Date (ascending)", "Last Reviewed Date (ascending)", "Reference Code"];
+  let availableCriteria = Object.keys(userProfile.currentRegistryData["Meta"]["SortOptions"]);
 
   return (
     <Animated.View

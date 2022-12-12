@@ -1,5 +1,5 @@
 import React, {  useContext } from "react";
-import { StyleSheet, Text, View, Pressable } from "react-native";
+import { StyleSheet, Text, View, Pressable, ScrollView , useWindowDimensions} from "react-native";
 
 import { AuthenticatedUserContext } from "../navigators/AuthenticatedUserProvider";
 
@@ -16,6 +16,7 @@ const FilterSelector = ({
   const { userProfile, setUserProfile } = useContext(AuthenticatedUserContext);
 
 
+
   let availableFilters = Object.keys(userProfile.JSObjOfAllSelections);
 
   return (
@@ -29,6 +30,7 @@ const FilterSelector = ({
           backgroundColor: "#f5ecc9",
           top: 125,
           width: "50%",
+          maxHeight: (useWindowDimensions().height)*0.7,
           zIndex: 1,
           borderRadius: 15,
           overflow: "hidden",
@@ -36,7 +38,7 @@ const FilterSelector = ({
         }}
     >
      
-        <View>
+        <ScrollView>
           {availableFilters.map(
             (filter, filterIndex) => (
               <View key={filter} style={styles.filterGroups}>
@@ -89,9 +91,9 @@ const FilterSelector = ({
           >
             <Text style={styles.options}>Clear all filters</Text>
           </Pressable>
-          <Text>Experimental Text</Text>
-        </View>
-      
+          
+        </ScrollView>
+        
     </Animated.View>
   );
 };

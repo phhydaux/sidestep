@@ -11,6 +11,9 @@ const PageEditMenuModal = ({
   pageEditMenuModalVisible,
   setPageEditMenuModalVisible,
   displayedEntry,
+  navigation,
+  displayOrder
+  
 }) => {
   const { userProfile, setUserProfile } = useContext(AuthenticatedUserContext);
 
@@ -27,6 +30,12 @@ set(newEntryRef,{Title: "Fred3"});
         "Registries/"+userProfile.currentRegistryID+"/Pages"));
 set(newEntryRef,{Title: "Fred4"});
 
+
+  }
+
+  const handleEditPage = () => {
+    navigation.navigate("Page Edit",{entryToEdit: displayedEntry, navigation: navigation, displayOrder: displayOrder});
+    setPageEditMenuModalVisible(false);
 
   }
 
@@ -64,29 +73,29 @@ set(newEntryRef,{Title: "Fred4"});
               borderRadius: 20,
             }}
           >
-            <View style={{ flex: 1, flexDirection: "column" }}>
+            <View style={{ flex: 1, flexDirection: "column", padding: 10, }}>
         
 
-        <Pressable onPress={() => {}}>
-          <View style={{ flexDirection: "row" }}>
+        <Pressable onPress={() => {handleEditPage()}}>
+          <View style={{ flexDirection: "row" , padding: 10,}}>
             <Ionicons name="create-outline" size={25} color="black" />
             <Text>Edit this Risk</Text>
           </View>
         </Pressable>
         <Pressable onPress={() => {}}>
-          <View style={{ flexDirection: "row" }}>
+          <View style={{ flexDirection: "row", padding: 10, }}>
             <Ionicons name="trash-outline" size={25} color="black" />
             <Text>Delete this Risk</Text>
           </View>
         </Pressable>
         <Pressable onPress={() => {handleAddEntry()}}>
-          <View style={{ flexDirection: "row" }}>
+          <View style={{ flexDirection: "row" , padding: 10,}}>
             <Ionicons name="add-circle-outline" size={25} color="black" />
             <Text>Add a new Risk</Text>
           </View>
         </Pressable>
         <Pressable onPress={() => {}}>
-          <View style={{ flexDirection: "row" }}>
+          <View style={{ flexDirection: "row", padding: 10, }}>
             <Ionicons name="archive-outline" size={25} color="black" />
             <Text>Archive this Risk</Text>
           </View>
@@ -113,4 +122,8 @@ export default PageEditMenuModal;
 
 const styles = StyleSheet.create({
   paragraph: {},
+  option: {
+    padding: 10,
+
+  },
 });

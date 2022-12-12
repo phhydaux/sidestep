@@ -5,16 +5,13 @@ import {
   ScrollView,
   StyleSheet,
   FlatList,
-  
   View,
   Text,
   Share,
   useWindowDimensions,
   Pressable,
-  
 } from "react-native";
 import { AuthenticatedUserContext } from "../navigators/AuthenticatedUserProvider";
-
 
 import RiskLevelBadge from "../components/RiskLevelBadge";
 import NoteModal from "../components/NoteModal";
@@ -30,18 +27,18 @@ const EntryDetailScreen = ({ navigation, route }) => {
   var startAt = useRef(route.params.index);
   const { userProfile, setUserProfile } = useContext(AuthenticatedUserContext);
 
-  const entriesInOrder = displayOrder.map((value) => {
- 
-return userProfile.currentRegistryData["Pages"][value];
-  });
+  // const entriesInOrder = displayOrder.map((value) => {
+
+  // return userProfile.currentRegistryData["Pages"][value];
+  // });
 
   const displayedEntryID = useRef();
   const [ref, setRef] = useState(null);
   const [noteModalVisible, setNoteModalVisible] = useState(false);
-  const [pageEditMenuModalVisible, setPageEditMenuModalVisible] = useState(false);
+  const [pageEditMenuModalVisible, setPageEditMenuModalVisible] =
+    useState(false);
   const [currentEntry, setCurrentEntry] = useState({});
   const [flag, setFlag] = useState("black");
- 
 
   // displayOrder:  Ordered array of the internalIDs to be displayed
   // startAt: The index number in the displayOrder which should be the
@@ -52,14 +49,10 @@ return userProfile.currentRegistryData["Pages"][value];
 
   const { width: windowWidth } = useWindowDimensions();
 
- 
-
-
-  const onViewCallBack = useCallback(({viewableItems}) => {
-    displayedEntryID.current = viewableItems[0].item.InternalID;
+  const onViewCallBack = useCallback(({ viewableItems }) => {
+    displayedEntryID.current = viewableItems[0].item;
     setCurrentEntry(viewableItems[0].item);
-   
-   
+    console.log(viewableItems[0]);
   }, []);
 
   const viewabilityConfig = useRef({
@@ -67,30 +60,29 @@ return userProfile.currentRegistryData["Pages"][value];
     waitForInteraction: false,
   });
 
-
- 
-
-
-
   const onLayout = () => {
-   var offset = windowWidth * startAt.current;
-   ref.scrollToOffset({ offset: offset, animated: false });
+    var offset = windowWidth * startAt.current;
+    ref.scrollToOffset({ offset: offset, animated: false });
   };
 
   // the renderItem function is used by FlatList
-  const renderItem = ({ item , index}) => {
+  // item is a Page UID
+  const renderItem = ({ item, index }) => {
+    const page = userProfile.currentRegistryData["Pages"][item];
     return (
-      <View style={{ width: windowWidth }} key={item.InternalID}>
+      <View style={{ width: windowWidth }} key={item}>
         {/* Header panel at the top of the screen */}
         <View style={styles.toppanel}>
           <View style={styles.toprow}>
             <View style={styles.badge}>
-              <RiskLevelBadge level={item.RiskLevel} />
+              <RiskLevelBadge level={page.RiskLevel} />
             </View>
-            <Text style={styles.label}>{item.Title} {index}</Text>
+            <Text style={styles.label}>
+              {page.Title} {index}
+            </Text>
           </View>
           <View style={styles.secondrow}>
-            <Text style={styles.RefID}>Ref ID: {item.RiskID}</Text>
+            <Text style={styles.RefID}>Ref ID: {page.RiskID}</Text>
           </View>
         </View>
 
@@ -107,7 +99,7 @@ return userProfile.currentRegistryData["Pages"][value];
           </View>
 
           <View style={styles.section}>
-            <Text style={styles.sectionOne}>{item.Outcome}</Text>
+            <Text style={styles.sectionOne}>{page.Outcome}</Text>
           </View>
 
           <View style={styles.bar}>
@@ -119,12 +111,12 @@ return userProfile.currentRegistryData["Pages"][value];
           </View>
 
           <View style={styles.section}>
-            <Text style={styles.sectionOne}>{item.Controls}</Text>
+            <Text style={styles.sectionOne}>{page.Controls}</Text>
           </View>
           <View style={styles.section}>
-            <Text style={styles.sectionOne}>Last Review: {item.LastRev}</Text>
+            <Text style={styles.sectionOne}>Last Review: {page.LastRev}</Text>
             <Text> </Text>
-            <Text style={styles.sectionOne}>Next Review: {item.NextRev}</Text>
+            <Text style={styles.sectionOne}>Next Review: {page.NextRev}</Text>
           </View>
           <View
             style={styles.separator}
@@ -140,16 +132,14 @@ return userProfile.currentRegistryData["Pages"][value];
     );
   };
 
-
   return (
     <SafeAreaView style={styles.container}>
       <View style={styles.scrollContainer}>
         <FlatList
           horizontal={true}
-          data={entriesInOrder}
+          data={displayOrder}
           renderItem={renderItem}
-          keyExtractor={(item) => item.InternalID}
-          extraData={Registry}
+          keyExtractor={(item) => item}
           pagingEnabled={true}
           onViewableItemsChanged={onViewCallBack}
           onLayout={onLayout}
@@ -177,36 +167,50 @@ return userProfile.currentRegistryData["Pages"][value];
               //This needs to be the Registry/Category list
               ShareButton(
                 "Regarding: " +
-                  Registry.entries[displayedEntryID.current].Title +
+                  userProfile.currentRegistryData["Pages"][
+                    displayedEntryID.current
+                  ].Title +
                   " Reference:" +
-                  Registry.entries[displayedEntryID.current].RiskID
+                  userProfile.currentRegistryData["Pages"][
+                    displayedEntryID.current
+                  ].RiskID
               );
             }}
           />
           <Text>Share</Text>
         </View>
-        <Pressable onPress={() => {setNoteModalVisible(true);}}>
+        <Pressable
+          onPress={() => {
+            setNoteModalVisible(true);
+          }}
+        >
           <View style={{ alignItems: "center" }}>
             <Ionicons name="chatbubble-outline" size={25} color={flag} />
             <Text></Text>
           </View>
         </Pressable>
-        <Pressable onPress={() => {setPageEditMenuModalVisible(true);}}>
-        <View style={{ alignItems: "center" }}>
-          <Ionicons name="ellipsis-horizontal" size={25} color={"black"} />
-          <Text>More</Text>
-        </View>
+        <Pressable
+          onPress={() => {
+            setPageEditMenuModalVisible(true);
+          }}
+        >
+          <View style={{ alignItems: "center" }}>
+            <Ionicons name="ellipsis-horizontal" size={25} color={"black"} />
+            <Text>More</Text>
+          </View>
         </Pressable>
       </View>
       <NoteModal
         noteModalVisible={noteModalVisible}
         setNoteModalVisible={setNoteModalVisible}
-        displayedEntry={currentEntry}
+        displayedEntry={displayedEntryID.current}
       />
       <PageEditMenuModal
-      pageEditMenuModalVisible={pageEditMenuModalVisible}
-      setPageEditMenuModalVisible={setPageEditMenuModalVisible}
-      displayedEntry={currentEntry}
+        pageEditMenuModalVisible={pageEditMenuModalVisible}
+        setPageEditMenuModalVisible={setPageEditMenuModalVisible}
+        displayedEntry={displayedEntryID.current}
+        navigation={navigation}
+        displayOrder={displayOrder}
       />
     </SafeAreaView>
   );
