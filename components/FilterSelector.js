@@ -17,7 +17,18 @@ const FilterSelector = ({
 
 
 
-  let availableFilters = Object.keys(userProfile.JSObjOfAllSelections);
+ // let availableFilters = Object.keys(userProfile.JSObjOfAllSelections);
+  //could get this directly from the Page Elements.
+
+  //get all page elements
+  let allPageElements = Object.keys(userProfile.currentRegistryData["Meta"]["PageElements"]);
+  
+  let availableFilters = allPageElements.filter((element)=>{
+return((userProfile.currentRegistryData["Meta"]["PageElements"][element]["Type"]=="List") && (userProfile.currentRegistryData["Meta"]["PageElements"][element]["UseToFilter"]==true))
+
+  })
+//N.B. availableFilters is an array
+
 
   return (
     <Animated.View
@@ -49,7 +60,7 @@ const FilterSelector = ({
                 </Text>
 
                 <View>
-                  {Object.keys(userProfile.JSObjOfAllSelections[filter]).map(
+                  {Object.keys(userProfile.currentRegistryData["Meta"]["PageElements"][filter]["PermittedValues"]).map(
                     (option, optionIndex) => (
                       <Pressable
                         onPress={() => {
@@ -57,9 +68,7 @@ const FilterSelector = ({
 
                           setUserProfile({
                             ...userProfile,
-                            currentFilterIndex: filterIndex,
                             currentFilterName: filter,
-                            currentOptionIndex: optionIndex,
                             currentOptionName: option,
                           });
                         }}

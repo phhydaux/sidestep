@@ -23,18 +23,114 @@ const EntryListScreen = ({ navigation, route }) => {
   const [modalVisible, setModalVisible] = useState(false);
   const [filterSelectorVisible, setFilterSelectorVisible] = useState(false);
   const [sortSelectorVisible, setSortSelectorVisible] = useState(false);
- 
-  const [displayOrder, setDisplayOrder] = useState(
-    Object.keys(userProfile.currentRegistryData["Pages"])
-  );
 
-  
+  const availablePages = Object.keys(userProfile.currentRegistryData["Pages"]);
+  let filteredDisplayOrder = [];
 
+  //Apply Filter
+  if (userProfile.currentFilterName == null) {
+    filteredDisplayOrder = availablePages;
+  } else {
+    filteredDisplayOrder = availablePages.filter((page) => {
+      console.log(userProfile.currentFilterName);
+      console.log(userProfile.currentOptionName);
+      console.log(page);
+
+      return (
+        userProfile.currentRegistryData["Pages"][page][
+          userProfile.currentFilterName
+        ] == userProfile.currentOptionName
+      );
+    });
+  }
+
+  //Apply Sort
+  if (userProfile.sortOptionName != null) {
+    filteredDisplayOrder.sort((a, b) => {
+      if (
+        userProfile.currentRegistryData["Meta"]["IndexCardFormat"] == 3 &&
+        userProfile.sortOptionName == "Risk Level"
+      ) {
+        let impactTemp_a =
+          userProfile.currentRegistryData["Pages"][a]["Impact"];
+        let likelihoodTemp_a =
+          userProfile.currentRegistryData["Pages"][a]["Likelihood"];
+        let riskTemp_a =
+          userProfile.currentRegistryData["Meta"]["RiskMatrix"][
+            likelihoodTemp_a
+          ][impactTemp_a];
+        let riskvalue_a =
+          userProfile.currentRegistryData["Meta"]["PageElements"]["Risk Level"][
+            "PermittedValues"
+          ][riskTemp_a];
+
+        let impactTemp_b =
+          userProfile.currentRegistryData["Pages"][b]["Impact"];
+        let likelihoodTemp_b =
+          userProfile.currentRegistryData["Pages"][b]["Likelihood"];
+        let riskTemp_b =
+          userProfile.currentRegistryData["Meta"]["RiskMatrix"][
+            likelihoodTemp_b
+          ][impactTemp_b];
+        let riskvalue_b =
+          userProfile.currentRegistryData["Meta"]["PageElements"]["Risk Level"][
+            "PermittedValues"
+          ][riskTemp_b];
+
+        return riskvalue_b - riskvalue_a;
+      } else if (
+        userProfile.currentRegistryData["Meta"]["PageElements"][
+          userProfile.sortOptionName
+        ]["Type"] == "Date"
+      ) {
+        return (
+          Date.parse(
+            userProfile.currentRegistryData["Pages"][a][
+              userProfile.sortOptionName
+            ]
+          ) -
+          Date.parse(
+            userProfile.currentRegistryData["Pages"][b][
+              userProfile.sortOptionName
+            ]
+          )
+        );
+      } else if (
+        userProfile.currentRegistryData["Meta"]["PageElements"][
+          userProfile.sortOptionName
+        ]["Type"] == "List"
+      ) {
+        valuekey_a =
+          userProfile.currentRegistryData["Pages"][a][
+            userProfile.sortOptionName
+          ];
+        value_a =
+          userProfile.currentRegistryData["Meta"]["PageElements"][
+            userProfile.sortOptionName
+          ]["PermittedValues"][valuekey_a];
+
+        valuekey_b =
+          userProfile.currentRegistryData["Pages"][b][
+            userProfile.sortOptionName
+          ];
+        value_b =
+          userProfile.currentRegistryData["Meta"]["PageElements"][
+            userProfile.sortOptionName
+          ]["PermittedValues"][valuekey_b];
+
+        return value_a - value_b;
+      } else {
+        console.log("Screw UP !");
+      }
+    });
+
+    if (userProfile.sortReverse) {
+      filteredDisplayOrder.reverse();
+    }
+  }
 
   const { windowHeight, windowWidth } = useWindowDimensions();
   const halfWindowWidth = windowWidth / 2;
-
-  
 
   return (
     <View style={{ flex: 1 }}>
@@ -56,24 +152,9 @@ const EntryListScreen = ({ navigation, route }) => {
               {userProfile.currentRegistryName}
             </Text>
           </View>
-          <Ionicons
-            name="list"
-            size={24}
-            color="black"
-            onPress={() => setModalVisible(true)}
-            style={styles.rightButton}
-          />
         </View>
       </Pressable>
 
-      {/* <SortOrderSelector
-        modalVisible={modalVisible}
-        setModalVisible={setModalVisible}
-        option={option}
-        setOption={setOption}
-        displayOrder={displayOrder}
-        setDisplayOrder={setDisplayOrder}
-      /> */}
       <View
         style={{
           flexDirection: "row",
@@ -98,7 +179,7 @@ const EntryListScreen = ({ navigation, route }) => {
             color="black"
             style={{ paddingRight: 5 }}
           />
-        
+
           {userProfile.currentFilterName != null && (
             <View>
               <View>
@@ -163,8 +244,8 @@ const EntryListScreen = ({ navigation, route }) => {
         />
       )}
 
-       <ScrollView>
-        {displayOrder.map((entryNum, index, dispOrder) => (
+      <ScrollView>
+        {filteredDisplayOrder.map((entryNum, index, dispOrder) => (
           <View key={entryNum}>
             <Pressable
               onPress={() =>
@@ -179,7 +260,7 @@ const EntryListScreen = ({ navigation, route }) => {
             </Pressable>
           </View>
         ))}
-      </ScrollView> 
+      </ScrollView>
 
       <View style={styles.navbar}>
         <Pressable
@@ -208,7 +289,12 @@ const EntryListScreen = ({ navigation, route }) => {
           <Ionicons name="chatbubble-outline" size={25} color={"black"} />
           <Text>Comment</Text>
         </View>
-        <Pressable style={{ alignItems: "center" }} onPress={() => {setPageEditMenuModalVisible(true);}}>
+        <Pressable
+          style={{ alignItems: "center" }}
+          onPress={() => {
+            setPageEditMenuModalVisible(true);
+          }}
+        >
           <Ionicons name="ellipsis-horizontal" size={25} color={"black"} />
           <Text>More</Text>
         </Pressable>
@@ -294,7 +380,7 @@ const styles = StyleSheet.create({
   rightButton: {
     paddingRight: 10,
   },
-  
+
   secondLine: {},
   section: {
     padding: 10,

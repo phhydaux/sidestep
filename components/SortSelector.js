@@ -8,7 +8,27 @@ import Animated, { Layout, FadeOutUp, ZoomIn } from "react-native-reanimated";
 const SortSelector = ({ sortSelectorVisible, setSortSelectorVisible }) => {
   const { userProfile, setUserProfile } = useContext(AuthenticatedUserContext);
 
-  let availableCriteria = Object.keys(userProfile.currentRegistryData["Meta"]["SortOptions"]);
+  //let availableCriteria = Object.keys(userProfile.currentRegistryData["Meta"]["SortOptions"]);
+
+  let allPageElements = Object.keys(
+    userProfile.currentRegistryData["Meta"]["PageElements"]
+  );
+
+  let availableCriteria = allPageElements.filter((element) => {
+    console.log(element);
+console.log(userProfile.currentRegistryData["Meta"]["PageElements"][element]["Type"]);
+console.log(userProfile.currentRegistryData["Meta"]["PageElements"][element]["UseToSort"]);
+
+
+    return (
+      userProfile.currentRegistryData["Meta"]["PageElements"][element][
+        "UseToSort"
+      ] == true
+    );
+  });
+
+  console.log("available");
+  console.log(availableCriteria);
 
   return (
     <Animated.View
@@ -27,47 +47,46 @@ const SortSelector = ({ sortSelectorVisible, setSortSelectorVisible }) => {
         opacity: 0.9,
       }}
     >
-      
+      <View>
+        {availableCriteria.map((sortOptionName, sortOptionIndex) => (
+          <Pressable
+            onPress={() => {
+              setSortSelectorVisible(false);
 
-            <View>
-              {availableCriteria.map(
-                (sortOptionName, sortOptionIndex) => (
-                  <Pressable
-                    onPress={() => {
-                      setSortSelectorVisible(false);
+              let reverse = null;
+              if (userProfile.sortOptionName == sortOptionName) {
+                reverse = !userProfile.sortReverse;
+              } else {
+                reverse = false;
+              }
 
-                      setUserProfile({
-                        ...userProfile,
-                        sortOptionIndex: sortOptionIndex,
-                        sortOptionName: sortOptionName,
-                      });
-                    }}
-                    key={sortOptionName}
-                  >
-                    <Text style={styles.options}>{sortOptionName}</Text>
-                  </Pressable>
-                )
-              )}
-            </View>
-          
-    
+              setUserProfile({
+                ...userProfile,
+                sortOptionName: sortOptionName,
+                sortReverse: reverse
+              });
+            }}
+            key={sortOptionName}
+          >
+            <Text style={styles.options}>{sortOptionName}</Text>
+          </Pressable>
+        ))}
+      </View>
 
-        <Pressable
-          onPress={() => {
-            setSortSelectorVisible(false);
+      <Pressable
+        onPress={() => {
+          setSortSelectorVisible(false);
 
-            setUserProfile({
-              ...userProfile,
+          setUserProfile({
+            ...userProfile,
 
-              sortOptionIndex: null,
-              sortOptionName: null,
-            });
-          }}
-        >
-          <Text style={styles.options}>Unsorted</Text>
-        </Pressable>
-    
-    
+            sortOptionIndex: null,
+            sortOptionName: null,
+          });
+        }}
+      >
+        <Text style={styles.options}>Unsorted</Text>
+      </Pressable>
     </Animated.View>
   );
 };

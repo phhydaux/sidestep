@@ -29,10 +29,6 @@ export default function RegistrySelector({ navigation }) {
           const currentRegistryIndexCardFormat =
             currentRegistryData["Meta"]["IndexCardFormat"];
           const currentRegistryOwner = currentRegistryData["Meta"]["Owner"];
-          const JSObjOfAllSelections = currentRegistryData["Meta"]["Filters"];
-          const arrayOfFilters = Object.keys(
-            currentRegistryData["Meta"]["Filters"]
-          );
 
           setUserProfile({
             ...userProfile,
@@ -41,14 +37,9 @@ export default function RegistrySelector({ navigation }) {
             currentRegistryName: currentRegistryName,
             currentRegistryIndexCardFormat: currentRegistryIndexCardFormat,
             currentRegistryOwner: currentRegistryOwner,
-            JSObjOfAllSelections: JSObjOfAllSelections,
-            arrayOfFilters: arrayOfFilters,
-            currentFilterIndex: null,
             currentFilterName: null,
-            currentOptionIndex: null,
             currentOptionName: null,
             sortOptionName: null,
-            sortOptionIndex: null,
             newflag: false,
           });
 
@@ -63,7 +54,6 @@ export default function RegistrySelector({ navigation }) {
   useEffect(() => {
     loadUserProfile();
   }, []);
-
 
   const loadUserProfile = () => {
     onValue(
@@ -97,7 +87,6 @@ export default function RegistrySelector({ navigation }) {
     // setSelectionsArray(selectionsArray);
   };
 
- 
   const reglist = userProfile.MyRegistries;
   // Do this with JSON.parse instead.
   let counter = 0;
