@@ -11,9 +11,10 @@ import {
   Pressable,
   useWindowDimensions,
 } from "react-native";
-import Registry from "../dataStore/dataSource";
+
 import { SafeAreaView } from "react-native-safe-area-context";
 import EntrySummaryCard from "../components/EntrySummaryCard";
+import IndexCard from "../components/IndexCard";
 import FilterSelector from "../components/FilterSelector";
 import SortSelector from "../components/SortSelector";
 
@@ -27,7 +28,7 @@ const EntryListScreen = ({ navigation, route }) => {
     Object.keys(userProfile.currentRegistryData["Pages"])
   );
 
-  console.log();
+  
 
 
   const { windowHeight, windowWidth } = useWindowDimensions();
@@ -174,7 +175,7 @@ const EntryListScreen = ({ navigation, route }) => {
               }
               key={entryNum}
             >
-              <EntrySummaryCard key={entryNum} currentEntryNum={entryNum} />
+              <IndexCard key={entryNum} currentEntryNum={entryNum} />
             </Pressable>
           </View>
         ))}
@@ -293,6 +294,7 @@ const styles = StyleSheet.create({
   rightButton: {
     paddingRight: 10,
   },
+  
   secondLine: {},
   section: {
     padding: 10,

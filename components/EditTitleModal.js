@@ -78,12 +78,10 @@ const EditTitleModal = ({
             saveToStaging();
           }}
         >
-           <Text style={{ fontSize: 18, color: "blue",}}>
-            Save
+           <Text style={{ fontSize: 18, color: "blue", paddingRight: 5}}>
+            Preview
           </Text>
-          <Text style={{ fontSize: 18, color: "blue",}}>
-            Edit
-          </Text>
+         
         </Pressable>
       </View>
       <View style={{ flexDirection: "row" }}>

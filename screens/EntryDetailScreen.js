@@ -13,9 +13,10 @@ import {
 } from "react-native";
 import { AuthenticatedUserContext } from "../navigators/AuthenticatedUserProvider";
 
-import RiskLevelBadge from "../components/RiskLevelBadge";
 import NoteModal from "../components/NoteModal";
 import PageEditMenuModal from "../components/PageEditMenuModal";
+import IndexCard from "../components/IndexCard";
+import PageLayout from "../components/PageLayout";
 
 const EntryDetailScreen = ({ navigation, route }) => {
   var displayOrder = route.params.order;
@@ -52,7 +53,6 @@ const EntryDetailScreen = ({ navigation, route }) => {
   const onViewCallBack = useCallback(({ viewableItems }) => {
     displayedEntryID.current = viewableItems[0].item;
     setCurrentEntry(viewableItems[0].item);
-    console.log(viewableItems[0]);
   }, []);
 
   const viewabilityConfig = useRef({
@@ -69,58 +69,26 @@ const EntryDetailScreen = ({ navigation, route }) => {
   // item is a Page UID
   const renderItem = ({ item, index }) => {
     const page = userProfile.currentRegistryData["Pages"][item];
+
     return (
       <View style={{ width: windowWidth }} key={item}>
         {/* Header panel at the top of the screen */}
         <View style={styles.toppanel}>
           <View style={styles.toprow}>
             <View style={styles.badge}>
-              <RiskLevelBadge level={page.RiskLevel} />
+              <IndexCard currentEntryNum={item} />
             </View>
-            <Text style={styles.label}>
-              {page.Title} {index}
-            </Text>
-          </View>
-          <View style={styles.secondrow}>
-            <Text style={styles.RefID}>Ref ID: {page.RiskID}</Text>
           </View>
         </View>
 
         {/* Main Body of the Screen - scrolls vertically if too long */}
 
         <ScrollView>
-          <View style={styles.separator} />
-          <View style={styles.bar}>
-            <View style={styles.leftspace} />
-            <View style={styles.tab}>
-              <Text>Outcome Description</Text>
-            </View>
-            <View style={styles.rightspace} />
-          </View>
-
-          <View style={styles.section}>
-            <Text style={styles.sectionOne}>{page.Outcome}</Text>
-          </View>
-
-          <View style={styles.bar}>
-            <View style={styles.leftspace} />
-            <View style={styles.tab}>
-              <Text>Controls in place</Text>
-            </View>
-            <View style={styles.rightspace} />
-          </View>
-
-          <View style={styles.section}>
-            <Text style={styles.sectionOne}>{page.Controls}</Text>
-          </View>
-          <View style={styles.section}>
-            <Text style={styles.sectionOne}>Last Review: {page.LastRev}</Text>
-            <Text> </Text>
-            <Text style={styles.sectionOne}>Next Review: {page.NextRev}</Text>
-          </View>
+      
+          <PageLayout currentEntryNum={item} />
           <View
             style={styles.separator}
-            lightColor="#eee"
+            lightColor="pink"
             darkColor="rgba(255,255,255,1)"
           />
 
@@ -240,7 +208,7 @@ const ShareButton = async (message) => {
 
 const styles = StyleSheet.create({
   badge: {
-    width: 110,
+    width: "100%",
   },
   bar: {
     flex: 0,
@@ -335,13 +303,12 @@ const styles = StyleSheet.create({
   },
   toppanel: {
     paddingLeft: 0,
-    backgroundColor: "#cccccc",
     height: 100,
     width: "100%",
   },
   toprow: {
     flex: 1,
-    padding: 5,
+    padding: 2,
     flexDirection: "row",
     justifyContent: "flex-start",
     alignItems: "stretch",

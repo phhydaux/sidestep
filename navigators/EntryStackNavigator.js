@@ -3,6 +3,7 @@ import * as React from "react";
 import { Ionicons } from "@expo/vector-icons";
 
 
+import { StyleSheet, Text, View } from "react-native";
 import {
   CardStyleInterpolators,
 } from "@react-navigation/stack";
@@ -48,13 +49,15 @@ export default function EntryStackNavigator() {
         name="Entry Detail"
         component={EntryDetailScreen}
         options={({ navigation }) => ({
-          headerLeft: () => (
+          headerLeft: () => (<View>
             <Ionicons
               name="chevron-back-sharp"
               size={24}
               color="black"
               onPress={() => navigation.pop()}
             />
+            <Text>Back</Text>
+            </View>
           ),
           cardStyleInterpolator: CardStyleInterpolators.forHorizontalIOS,
         })}

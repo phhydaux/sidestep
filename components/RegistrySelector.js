@@ -60,6 +60,11 @@ export default function RegistrySelector({ navigation }) {
     );
   };
 
+  useEffect(() => {
+    loadUserProfile();
+  }, []);
+
+
   const loadUserProfile = () => {
     onValue(
       ref(database, "/Users/" + auth.currentUser.uid),
@@ -92,10 +97,7 @@ export default function RegistrySelector({ navigation }) {
     // setSelectionsArray(selectionsArray);
   };
 
-  useEffect(() => {
-    loadUserProfile();
-  }, []);
-
+ 
   const reglist = userProfile.MyRegistries;
   // Do this with JSON.parse instead.
   let counter = 0;
