@@ -18,12 +18,7 @@ const EditTitleModal = ({
   const [text, onChangeText] = useState(pageBeingEdited.Title);
   const { userProfile, setUserProfile } = useContext(AuthenticatedUserContext);
 
-  // console.log("dribble");
-  // console.log(displayedEntry);
-  // console.log(currentEntry[displayedEntry]);
-  // console.log(currentEntry[displayedEntry]["Title"]);
 
-  //onChangeText(textToEdit);
 
   const resetText = () => {
     onChangeText();

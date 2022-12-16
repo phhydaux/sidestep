@@ -32,9 +32,7 @@ const EntryListScreen = ({ navigation, route }) => {
     filteredDisplayOrder = availablePages;
   } else {
     filteredDisplayOrder = availablePages.filter((page) => {
-      console.log(userProfile.currentFilterName);
-      console.log(userProfile.currentOptionName);
-      console.log(page);
+
 
       return (
         userProfile.currentRegistryData["Pages"][page][

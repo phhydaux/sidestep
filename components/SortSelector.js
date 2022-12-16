@@ -8,18 +8,12 @@ import Animated, { Layout, FadeOutUp, ZoomIn } from "react-native-reanimated";
 const SortSelector = ({ sortSelectorVisible, setSortSelectorVisible }) => {
   const { userProfile, setUserProfile } = useContext(AuthenticatedUserContext);
 
-  //let availableCriteria = Object.keys(userProfile.currentRegistryData["Meta"]["SortOptions"]);
 
   let allPageElements = Object.keys(
     userProfile.currentRegistryData["Meta"]["PageElements"]
   );
 
   let availableCriteria = allPageElements.filter((element) => {
-    console.log(element);
-console.log(userProfile.currentRegistryData["Meta"]["PageElements"][element]["Type"]);
-console.log(userProfile.currentRegistryData["Meta"]["PageElements"][element]["UseToSort"]);
-
-
     return (
       userProfile.currentRegistryData["Meta"]["PageElements"][element][
         "UseToSort"
@@ -27,10 +21,7 @@ console.log(userProfile.currentRegistryData["Meta"]["PageElements"][element]["Us
     );
   });
 
-  console.log("available");
-  console.log(availableCriteria);
-
-  return (
+   return (
     <Animated.View
       layout={Layout.duration(300)}
       entering={ZoomIn.duration(300)}

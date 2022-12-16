@@ -22,13 +22,6 @@ const NoteModal = ({
 
    const currentEntry = userProfile.currentRegistryData["Pages"];
 
-// console.log("dribble");
-// console.log(displayedEntry);
-// console.log(currentEntry[displayedEntry]);
-// console.log(currentEntry[displayedEntry]["Title"]);
-
-  
-
 
   const resetText = () => {
     onChangeText();

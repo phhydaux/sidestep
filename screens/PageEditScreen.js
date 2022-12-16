@@ -68,6 +68,7 @@ const PageEditScreen = ({ navigation, route }) => {
           <View style={styles.toprow}>
             <View style={styles.badge}>
               <RiskLevelBadge level={pageBeingEdited.RiskLevel} />
+              <IndexCard currentEntryNum={item} />
             </View>
             <Pressable style={{ flex: 1 }} onPress={() => handleEditTitle()}>
               <Text style={styles.label}>{pageBeingEdited["Title"]}</Text>
@@ -75,6 +76,15 @@ const PageEditScreen = ({ navigation, route }) => {
           </View>
           <View style={styles.secondrow}>
             <Text style={styles.RefID}>Ref ID: {pageBeingEdited.RiskID}</Text>
+          </View>
+        </View>
+
+         {/* Header panel at the top of the screen */}
+         <View style={styles.toppanel}>
+          <View style={styles.toprow}>
+            <View style={styles.badge}>
+              <IndexCard currentEntryNum={item} />
+            </View>
           </View>
         </View>
 
