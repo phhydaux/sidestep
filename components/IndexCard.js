@@ -42,7 +42,8 @@ const IndexCard = ({ currentEntryNum }) => {
   return (
     <View style={styles.card}>
       <View style={styles.colleft}>
-        <RiskLevelDisplay currentEntryNum={currentEntryNum} />
+        <RiskLevelDisplay likelihood={userProfile.currentRegistryData["Pages"][currentEntryNum]["Likelihood"] }
+                          impact={userProfile.currentRegistryData["Pages"][currentEntryNum]["Impact"] } />
 
        {(cardLabel[1]) && (<Text style={styles.label}>{cardLabel[1]}</Text>)}
        {(cardLabel[2]) && (<Text style={styles.label}>{cardLabel[2]}</Text>)}

@@ -12,8 +12,6 @@ import {
   useWindowDimensions,
 } from "react-native";
 
-import { SafeAreaView } from "react-native-safe-area-context";
-import EntrySummaryCard from "../components/EntrySummaryCard";
 import IndexCard from "../components/IndexCard";
 import FilterSelector from "../components/FilterSelector";
 import SortSelector from "../components/SortSelector";
@@ -32,8 +30,6 @@ const EntryListScreen = ({ navigation, route }) => {
     filteredDisplayOrder = availablePages;
   } else {
     filteredDisplayOrder = availablePages.filter((page) => {
-
-
       return (
         userProfile.currentRegistryData["Pages"][page][
           userProfile.currentFilterName
@@ -129,6 +125,26 @@ const EntryListScreen = ({ navigation, route }) => {
 
   const { windowHeight, windowWidth } = useWindowDimensions();
   const halfWindowWidth = windowWidth / 2;
+
+
+
+const handleSelectItem = (index, dispOrder)=> {
+
+  setUserProfile({
+    ...userProfile,
+    displayOrder: dispOrder,
+    startAt: index
+  })
+
+  navigation.push("Entry Detail", {
+ 
+  })
+
+
+}
+
+
+
 
   return (
     <View style={{ flex: 1 }}>
@@ -246,12 +262,7 @@ const EntryListScreen = ({ navigation, route }) => {
         {filteredDisplayOrder.map((entryNum, index, dispOrder) => (
           <View key={entryNum}>
             <Pressable
-              onPress={() =>
-                navigation.push("Entry Detail", {
-                  index: index,
-                  order: dispOrder,
-                })
-              }
+              onPress={() => handleSelectItem(index , dispOrder)}
               key={entryNum}
             >
               <IndexCard key={entryNum} currentEntryNum={entryNum} />

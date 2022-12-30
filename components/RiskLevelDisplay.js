@@ -3,24 +3,23 @@ import { View, Text, StyleSheet, SafeAreaView } from "react-native";
 
 import { AuthenticatedUserContext } from "../navigators/AuthenticatedUserProvider";
 
-const RiskLevelDisplay = ({ currentEntryNum }) => {
+const RiskLevelDisplay = ({ likelihood, impact}) => {
   const { userProfile, setUserProfile } = useContext(AuthenticatedUserContext);
 
-  const currentEntry =
-    userProfile.currentRegistryData["Pages"][currentEntryNum];
+  
 
   //const thisLikelihood = currentEntry["Likelihood"];
   //const thisImpact = currentEntry["Impact"];
 
 
  const boxLegend =
-    userProfile.currentRegistryData["Meta"]["RiskMatrix"][currentEntry["Likelihood"]][
-        currentEntry["Impact"]
+    userProfile.currentRegistryData["Meta"]["RiskMatrix"][likelihood][
+        impact
     ];
  
   const boxColor =
-    userProfile.currentRegistryData["Meta"]["RiskColors"][currentEntry["Likelihood"]][
-        currentEntry["Impact"]
+    userProfile.currentRegistryData["Meta"]["RiskColors"][likelihood][
+        impact
     ];
  
 

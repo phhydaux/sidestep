@@ -19,40 +19,27 @@ import IndexCard from "../components/IndexCard";
 import PageLayout from "../components/PageLayout";
 
 const EntryDetailScreen = ({ navigation, route }) => {
-  var displayOrder = route.params.order;
 
-  // I put startAt in a ref because useEffect seems to fire whenever
-  // the footer is modified, forcing the scroll back to its initial
-  // position.  By changing startAt to the current position, when useEffect
-  // fires it does not affect the scroll postion.
-  var startAt = useRef(route.params.index);
   const { userProfile, setUserProfile } = useContext(AuthenticatedUserContext);
-
-  // const entriesInOrder = displayOrder.map((value) => {
-
-  // return userProfile.currentRegistryData["Pages"][value];
-  // });
-
-  const displayedEntryID = useRef();
   const [ref, setRef] = useState(null);
   const [noteModalVisible, setNoteModalVisible] = useState(false);
   const [pageEditMenuModalVisible, setPageEditMenuModalVisible] =
     useState(false);
-  const [currentEntry, setCurrentEntry] = useState({});
   const [flag, setFlag] = useState("black");
 
-  // displayOrder:  Ordered array of the internalIDs to be displayed
-  // startAt: The index number in the displayOrder which should be the
-  //          first displayed entry.
+ 
+
   // entriesInOrder: Array of entries in the order they should be displayed
-  // displayedEntryID: The InternalID number of the currently displayed entry
+
   // ref: a reference to the FlatList object
 
   const { width: windowWidth } = useWindowDimensions();
 
   const onViewCallBack = useCallback(({ viewableItems }) => {
-    displayedEntryID.current = viewableItems[0].item;
-    setCurrentEntry(viewableItems[0].item);
+    setUserProfile({
+      ...userProfile,
+      currentPage: viewableItems[0].item
+    })
   }, []);
 
   const viewabilityConfig = useRef({
@@ -60,9 +47,12 @@ const EntryDetailScreen = ({ navigation, route }) => {
     waitForInteraction: false,
   });
 
+
+
   const onLayout = () => {
-    var offset = windowWidth * startAt.current;
-    ref.scrollToOffset({ offset: offset, animated: false });
+    
+    var offset = windowWidth * userProfile.startAt;
+    ref.scrollToOffset({ offset: offset, animated: true });
   };
 
   // the renderItem function is used by FlatList
@@ -105,7 +95,7 @@ const EntryDetailScreen = ({ navigation, route }) => {
       <View style={styles.scrollContainer}>
         <FlatList
           horizontal={true}
-          data={displayOrder}
+          data={userProfile.displayOrder}
           renderItem={renderItem}
           keyExtractor={(item) => item}
           pagingEnabled={true}
@@ -136,11 +126,11 @@ const EntryDetailScreen = ({ navigation, route }) => {
               ShareButton(
                 "Regarding: " +
                   userProfile.currentRegistryData["Pages"][
-                    displayedEntryID.current
+                    userProfile.currentPage
                   ].Title +
                   " Reference:" +
                   userProfile.currentRegistryData["Pages"][
-                    displayedEntryID.current
+                    userProfile.currentPage
                   ].RiskID
               );
             }}
@@ -171,14 +161,16 @@ const EntryDetailScreen = ({ navigation, route }) => {
       <NoteModal
         noteModalVisible={noteModalVisible}
         setNoteModalVisible={setNoteModalVisible}
-        displayedEntry={displayedEntryID.current}
+        displayedEntry={userProfile.currentPage}
+        navigation={navigation}
       />
       <PageEditMenuModal
         pageEditMenuModalVisible={pageEditMenuModalVisible}
         setPageEditMenuModalVisible={setPageEditMenuModalVisible}
-        displayedEntry={displayedEntryID.current}
+        displayedEntry={userProfile.currentPage}
         navigation={navigation}
-        displayOrder={displayOrder}
+        
+        
       />
     </SafeAreaView>
   );

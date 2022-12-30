@@ -17,9 +17,7 @@ const FilterSelector = ({
 
 
 
- // let availableFilters = Object.keys(userProfile.JSObjOfAllSelections);
-  //could get this directly from the Page Elements.
-
+ 
   //get all page elements
   let allPageElements = Object.keys(userProfile.currentRegistryData["Meta"]["PageElements"]);
   
@@ -91,9 +89,9 @@ return((userProfile.currentRegistryData["Meta"]["PageElements"][element]["Type"]
 
               setUserProfile({
                 ...userProfile,
-                currentFilterIndex: null,
+                
                 currentFilterName: null,
-                currentOptionIndex: null,
+                
                 currentOptionName: null,
               });
             }}

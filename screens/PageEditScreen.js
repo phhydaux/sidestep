@@ -15,15 +15,15 @@ import { Ionicons } from "@expo/vector-icons";
 
 import RiskLevelBadge from "../components/RiskLevelBadge";
 import { SafeAreaView } from "react-native-safe-area-context";
-import EditTitleModal from "../components/EditTitleModal";
+
+import PageEditIndexCard from "../components/PageEditIndexCard";
 import EntryDetailScreen from "./EntryDetailScreen";
 
 const PageEditScreen = ({ navigation, route }) => {
   const { userProfile, setUserProfile } = useContext(AuthenticatedUserContext);
-  const [editTitleModalVisible, setEditTitleModalVisible] = useState(false);
-  const [pageBeingEdited, setPageBeingEdited] = useState(
-    userProfile.currentRegistryData["Pages"][route.params.entryToEdit]
-  );
+ 
+  const [pageBeingEdited, setPageBeingEdited] = useState(userProfile.currentRegistryData["Pages"][userProfile.currentPage]);
+  // N.B. pageBeingEdited is the object, not just the number
 
   const handleSaveAll = () => {
     const pageRef = ref(
@@ -31,16 +31,20 @@ const PageEditScreen = ({ navigation, route }) => {
       "Registries/" +
         userProfile.currentRegistryID +
         "/Pages/" +
-        route.params.entryToEdit
+        userProfile.currentPage
     );
 
     set(pageRef, pageBeingEdited);
-    navigation.navigate("EntryListScreen");
+    //navigation.goBack();
+
+
+
+    navigation.navigate("EntryListScreen")
+
+
   };
 
-  const handleEditTitle = () => {
-    setEditTitleModalVisible(true);
-  };
+ 
 
   return (
     <SafeAreaView>
@@ -65,28 +69,17 @@ const PageEditScreen = ({ navigation, route }) => {
       <View style={{}}>
         {/* Header panel at the top of the screen */}
         <View style={styles.toppanel}>
-          <View style={styles.toprow}>
-            <View style={styles.badge}>
-              <RiskLevelBadge level={pageBeingEdited.RiskLevel} />
-              <IndexCard currentEntryNum={item} />
-            </View>
-            <Pressable style={{ flex: 1 }} onPress={() => handleEditTitle()}>
-              <Text style={styles.label}>{pageBeingEdited["Title"]}</Text>
-            </Pressable>
-          </View>
-          <View style={styles.secondrow}>
-            <Text style={styles.RefID}>Ref ID: {pageBeingEdited.RiskID}</Text>
-          </View>
+          
+              
+              <PageEditIndexCard
+              pageBeingEdited={pageBeingEdited}
+              setPageBeingEdited={setPageBeingEdited}
+              
+               />
+           
         </View>
 
-         {/* Header panel at the top of the screen */}
-         <View style={styles.toppanel}>
-          <View style={styles.toprow}>
-            <View style={styles.badge}>
-              <IndexCard currentEntryNum={item} />
-            </View>
-          </View>
-        </View>
+   
 
         {/* Main Body of the Screen - scrolls vertically if too long */}
 
@@ -135,12 +128,7 @@ const PageEditScreen = ({ navigation, route }) => {
           </View>
         </ScrollView>
       </View>
-      <EditTitleModal
-        editTitleModalVisible={editTitleModalVisible}
-        setEditTitleModalVisible={setEditTitleModalVisible}
-        pageBeingEdited={pageBeingEdited}
-        setPageBeingEdited={setPageBeingEdited}
-      />
+      
     </SafeAreaView>
   );
 };
@@ -262,8 +250,9 @@ const styles = StyleSheet.create({
     borderRadius: 5,
   },
   toppanel: {
-    paddingLeft: 0,
-    backgroundColor: "#cccccc",
+    paddingLeft: 3,
+    paddingRight: 3,
+    backgroundColor: "#fff",
     height: 100,
     width: "100%",
   },
@@ -274,29 +263,8 @@ const styles = StyleSheet.create({
     justifyContent: "flex-start",
     alignItems: "flex-start",
   },
-  infoText: {
-    color: "white",
-    fontSize: 16,
-    fontWeight: "bold",
-  },
-  navbar: {
-    backgroundColor: "white",
-    height: 50,
-    width: "100%",
-    flexDirection: "row",
-    justifyContent: "space-around",
-    alignItems: "center",
-  },
-  normalDot: {
-    height: 8,
-    width: 8,
-    borderRadius: 4,
-    backgroundColor: "silver",
-    marginHorizontal: 4,
-  },
-  indicatorContainer: {
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "center",
-  },
+ 
+
+
+
 });

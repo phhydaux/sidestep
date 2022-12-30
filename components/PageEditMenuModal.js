@@ -34,8 +34,9 @@ set(newEntryRef,{Title: "Fred4"});
   }
 
   const handleEditPage = () => {
-    navigation.navigate("Page Edit",{entryToEdit: displayedEntry, navigation: navigation, displayOrder: displayOrder});
     setPageEditMenuModalVisible(false);
+    navigation.navigate("Page Edit");
+    
 
   }
 

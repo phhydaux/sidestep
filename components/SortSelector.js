@@ -8,7 +8,6 @@ import Animated, { Layout, FadeOutUp, ZoomIn } from "react-native-reanimated";
 const SortSelector = ({ sortSelectorVisible, setSortSelectorVisible }) => {
   const { userProfile, setUserProfile } = useContext(AuthenticatedUserContext);
 
-
   let allPageElements = Object.keys(
     userProfile.currentRegistryData["Meta"]["PageElements"]
   );
@@ -21,7 +20,7 @@ const SortSelector = ({ sortSelectorVisible, setSortSelectorVisible }) => {
     );
   });
 
-   return (
+  return (
     <Animated.View
       layout={Layout.duration(300)}
       entering={ZoomIn.duration(300)}
@@ -54,7 +53,7 @@ const SortSelector = ({ sortSelectorVisible, setSortSelectorVisible }) => {
               setUserProfile({
                 ...userProfile,
                 sortOptionName: sortOptionName,
-                sortReverse: reverse
+                sortReverse: reverse,
               });
             }}
             key={sortOptionName}
@@ -70,8 +69,6 @@ const SortSelector = ({ sortSelectorVisible, setSortSelectorVisible }) => {
 
           setUserProfile({
             ...userProfile,
-
-            sortOptionIndex: null,
             sortOptionName: null,
           });
         }}
