@@ -29,6 +29,8 @@ const EntryDetailScreen = ({ navigation, route }) => {
 
  
 
+ 
+
   // entriesInOrder: Array of entries in the order they should be displayed
 
   // ref: a reference to the FlatList object

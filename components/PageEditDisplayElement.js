@@ -1,12 +1,12 @@
 import React, { useState, useContext } from "react";
-import { StyleSheet, Text, View } from "react-native";
+import { StyleSheet, Text, View, Pressable } from "react-native";
 
 import { AuthenticatedUserContext } from "../navigators/AuthenticatedUserProvider";
 
-const DisplayElement = ({currentEntryNum, currentElement}) => {
+const PageEditDisplayElement = ({ currentElement, navigation }) => {
   const { userProfile, setUserProfile } = useContext(AuthenticatedUserContext);
+  var prefix, postfix;
   
-
   switch (
     userProfile.currentRegistryData["Meta"]["PageElements"][currentElement][
       "Type"
@@ -29,42 +29,98 @@ const DisplayElement = ({currentEntryNum, currentElement}) => {
             </View>
             <View style={styles.rightspace} />
           </View>
-          <View style={styles.section}>
+          <Pressable
+            style={styles.section}
+            onPress={() =>
+              navigation.push("Edit TextBlock Screen", {
+                elementToEdit: currentElement,
+              })
+            }
+          >
             <Text style={styles.sectionOne}>
-              {
-                userProfile.currentRegistryData["Pages"][currentEntryNum][
-                  currentElement
-                ]
-              }
+              {userProfile.pageBeingEdited[currentElement]}
             </Text>
-          </View>
+          </Pressable>
         </View>
       );
 
       break;
     case "ShortText":
-    case "Date":
-    case "List":
-      let prefix =
+      prefix =
         userProfile.currentRegistryData["Meta"]["PageElements"][currentElement][
           "TextBefore"
         ] ?? "";
 
-      let postfix =
+      postfix =
         userProfile.currentRegistryData["Meta"]["PageElements"][currentElement][
           "TextAfter"
         ] ?? "";
 
       return (
-        <View style={styles.section}>
+        <Pressable
+          style={styles.section}
+          onPress={() =>
+            navigation.push("Edit ShortText Screen", {
+              elementToEdit: currentElement,
+            })
+          }
+        >
           <Text style={styles.sectionOne}>
-            {prefix +
-              userProfile.currentRegistryData["Pages"][currentEntryNum][
-                currentElement
-              ] +
-              postfix}
+            {prefix + userProfile.pageBeingEdited[currentElement] + postfix}
           </Text>
-        </View>
+        </Pressable>
+      );
+      break;
+    case "Date":
+      prefix =
+        userProfile.currentRegistryData["Meta"]["PageElements"][currentElement][
+          "TextBefore"
+        ] ?? "";
+
+      postfix =
+        userProfile.currentRegistryData["Meta"]["PageElements"][currentElement][
+          "TextAfter"
+        ] ?? "";
+
+      return (
+        <Pressable
+          style={styles.section}
+          onPress={() =>
+            navigation.push("Edit Date Screen", {
+              elementToEdit: currentElement,
+            })
+          }
+        >
+          <Text style={styles.sectionOne}>
+            {prefix + userProfile.pageBeingEdited[currentElement] + postfix}
+          </Text>
+        </Pressable>
+      );
+      break;
+    case "List":
+      prefix =
+        userProfile.currentRegistryData["Meta"]["PageElements"][currentElement][
+          "TextBefore"
+        ] ?? "";
+
+      postfix =
+        userProfile.currentRegistryData["Meta"]["PageElements"][currentElement][
+          "TextAfter"
+        ] ?? "";
+
+      return (
+        <Pressable
+          style={styles.section}
+          onPress={() =>
+            navigation.push("Edit List Screen", {
+              elementToEdit: currentElement,
+            })
+          }
+        >
+          <Text style={styles.sectionOne}>
+            {prefix + userProfile.pageBeingEdited[currentElement] + postfix}
+          </Text>
+        </Pressable>
       );
       break;
 
@@ -72,10 +128,9 @@ const DisplayElement = ({currentEntryNum, currentElement}) => {
       console.log("Error in switch statement");
       break;
   }
-  
 };
 
-export default DisplayElement;
+export default PageEditDisplayElement;
 
 const styles = StyleSheet.create({
   bar: {
@@ -117,7 +172,6 @@ const styles = StyleSheet.create({
   separator: {
     height: 5,
     width: "100%",
-    
   },
   tab: {
     borderRadius: 10,

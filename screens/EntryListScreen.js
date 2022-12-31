@@ -25,6 +25,8 @@ const EntryListScreen = ({ navigation, route }) => {
   const availablePages = Object.keys(userProfile.currentRegistryData["Pages"]);
   let filteredDisplayOrder = [];
 
+
+
   //Apply Filter
   if (userProfile.currentFilterName == null) {
     filteredDisplayOrder = availablePages;

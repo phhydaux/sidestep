@@ -1,7 +1,6 @@
-import { browserLocalPersistence } from "firebase/auth";
 import React, { useState, useContext, useEffect } from "react";
 import {
-  Modal,
+  SafeAreaView,
   StyleSheet,
   Text,
   View,
@@ -11,23 +10,28 @@ import {
 } from "react-native";
 import { AuthenticatedUserContext } from "../navigators/AuthenticatedUserProvider";
 
-const EditShortTextModal = ({
-  editShortTextModalVisible,
-  setEditShortTextModalVisible,
-  pageBeingEdited,
-  setPageBeingEdited,
-  shortText,
-  setShortText,
-}) => {
+const EditShortTextScreen = ({ navigation, route }) => {
   const { userProfile, setUserProfile } = useContext(AuthenticatedUserContext);
+  
+
   const [count, setCount] = useState();
+  const elementToEdit = route.params.elementToEdit;
+  const [shortText, setShortText] = useState(
+    userProfile.pageBeingEdited[elementToEdit]
+  );
 
   const saveToStaging = () => {
-    setPageBeingEdited({
-      ...pageBeingEdited,
-      [userProfile.currentPageElement]: shortText,
+
+    const copyOfPage = JSON.parse(JSON.stringify(userProfile.pageBeingEdited))
+    copyOfPage[elementToEdit] = shortText;
+
+    
+    setUserProfile({
+      ...userProfile,
+      pageBeingEdited: {...copyOfPage}
     });
-    setEditShortTextModalVisible(false);
+
+    navigation.goBack();
   };
 
   const onChangeText = (text) => {
@@ -36,15 +40,7 @@ const EditShortTextModal = ({
   };
 
   return (
-    <Modal
-      animationType="slide"
-      transparent={false}
-      visible={editShortTextModalVisible}
-      presentationStyle="formSheet"
-      onRequestClose={() => {
-        setEditShortTextModalVisible(!editShortTextModalVisible);
-      }}
-    >
+    <SafeAreaView>
       <View
         style={{
           flexDirection: "row",
@@ -56,7 +52,7 @@ const EditShortTextModal = ({
       >
         <Pressable
           onPress={() => {
-            setEditShortTextModalVisible(!editShortTextModalVisible);
+            navigation.goBack();
           }}
         >
           <Text
@@ -71,7 +67,7 @@ const EditShortTextModal = ({
         </Pressable>
         <View alignItems="center">
           <Text style={{ fontSize: 18 }}>Editing page element:</Text>
-          <Text> {userProfile.currentPageElement}</Text>
+          <Text>{elementToEdit}</Text>
         </View>
         <Pressable
           onPress={() => {
@@ -83,19 +79,9 @@ const EditShortTextModal = ({
           </Text>
         </Pressable>
       </View>
-      <View style={{ flexDirection: "row" }}>
-        <Text></Text>
-        <Text style={{ fontWeight: "bold", fontSize: 15 }}></Text>
-      </View>
+     
 
-      <View
-        style={{
-          flex: 1,
-          alignItems: "flex-start",
-          justifyContent: "flex-start",
-          backgroundColor: "#cdcdcd",
-        }}
-      >
+      <View>
         <Text>This is a limited length text field.</Text>
         <Text> There are {count} characters left</Text>
 
@@ -110,19 +96,22 @@ const EditShortTextModal = ({
           keyboardType="default"
         />
       </View>
-    </Modal>
+    </SafeAreaView>
   );
 };
 
-export default EditShortTextModal;
+export default EditShortTextScreen;
 
 const styles = StyleSheet.create({
   paragraph: {},
   input: {
     fontSize: 20,
-    margin: 12,
+    margin: 20,
     borderWidth: 0,
-    padding: 10,
+    padding: 0,
     backgroundColor: "pink",
+    paddingLeft: 50,
+    paddingBottom: 5,
+    
   },
 });

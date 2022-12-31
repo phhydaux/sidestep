@@ -1,29 +1,48 @@
-import { ref, push, set } from "firebase/database";
+import { ref, set } from "firebase/database";
 import { database } from "../firebaseConfig";
-import React, { useState, useContext } from "react";
+import React, { useContext, useState, useEffect } from "react";
 import { AuthenticatedUserContext } from "../navigators/AuthenticatedUserProvider";
-import {
-  Modal,
-  StyleSheet,
-  Text,
-  View,
-  ScrollView,
-  Pressable,
-  TextInput,
-} from "react-native";
+import { StyleSheet, Text, View, ScrollView, Pressable } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
-
-import RiskLevelBadge from "../components/RiskLevelBadge";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 import PageEditIndexCard from "../components/PageEditIndexCard";
-import EntryDetailScreen from "./EntryDetailScreen";
+import PageEditDisplayElement from "../components/PageEditDisplayElement";
 
 const PageEditScreen = ({ navigation, route }) => {
   const { userProfile, setUserProfile } = useContext(AuthenticatedUserContext);
+
  
-  const [pageBeingEdited, setPageBeingEdited] = useState(userProfile.currentRegistryData["Pages"][userProfile.currentPage]);
-  // N.B. pageBeingEdited is the object, not just the number
+
+  useEffect(() => {
+    if (userProfile.currentRegistryData && userProfile.currentPage) {
+      const copyOfPage = JSON.parse(
+        JSON.stringify(
+          userProfile.currentRegistryData["Pages"][userProfile.currentPage]
+        )
+      );
+      setUserProfile({
+        ...userProfile,
+        pageBeingEdited: { ...copyOfPage },
+      });
+    }
+  }, [userProfile.currentPage]);
+
+ 
+
+  const handleCancel = () => {
+    const copyOfPage = JSON.parse(
+      JSON.stringify(
+        userProfile.currentRegistryData["Pages"][userProfile.currentPage]
+      )
+    );
+    setUserProfile({
+      ...userProfile,
+      pageBeingEdited: { ...copyOfPage },
+    });
+
+    navigation.navigate("EntryListScreen");
+  };
 
   const handleSaveAll = () => {
     const pageRef = ref(
@@ -34,25 +53,27 @@ const PageEditScreen = ({ navigation, route }) => {
         userProfile.currentPage
     );
 
-    set(pageRef, pageBeingEdited);
+    set(pageRef, userProfile.pageBeingEdited);
+
     //navigation.goBack();
 
-
-
-    navigation.navigate("EntryListScreen")
-
-
+    navigation.navigate("EntryListScreen");
   };
 
- 
+  const listOfElements = Object.keys(
+    userProfile.currentRegistryData["Meta"]["OrderOnPage"]
+  );
+  listOfElements.sort(
+    (b, a) =>
+      userProfile.currentRegistryData["Meta"]["OrderOnPage"][b] -
+      userProfile.currentRegistryData["Meta"]["OrderOnPage"][a]
+  );
+
 
   return (
     <SafeAreaView>
       <View style={styles.header}>
-        <Pressable
-          style={styles.leftbutton}
-          onPress={() => navigation.goBack()}
-        >
+        <Pressable style={styles.leftbutton} onPress={() => handleCancel()}>
           <Ionicons name="chevron-back-sharp" size={24} color="blue" />
           <Text style={{ fontSize: 18, color: "blue" }}>Cancel</Text>
         </Pressable>
@@ -69,54 +90,24 @@ const PageEditScreen = ({ navigation, route }) => {
       <View style={{}}>
         {/* Header panel at the top of the screen */}
         <View style={styles.toppanel}>
-          
-              
-              <PageEditIndexCard
-              pageBeingEdited={pageBeingEdited}
-              setPageBeingEdited={setPageBeingEdited}
-              
-               />
-           
+          {userProfile.pageBeingEdited && (
+            <PageEditIndexCard navigation={navigation} />
+          )}
         </View>
 
-   
-
         {/* Main Body of the Screen - scrolls vertically if too long */}
-
         <ScrollView>
-          <View style={styles.separator} />
-          <View style={styles.bar}>
-            <View style={styles.leftspace} />
-            <View style={styles.tab}>
-              <Text>Outcome Description</Text>
+          {userProfile.pageBeingEdited && (
+            <View>
+              {listOfElements.map((element) => (
+                <PageEditDisplayElement
+                  currentElement={element}
+                  key={element}
+                  navigation={navigation}
+                />
+              ))}
             </View>
-            <View style={styles.rightspace} />
-          </View>
-
-          <View style={styles.section}>
-            <Text style={styles.sectionOne}>{pageBeingEdited.Outcome}</Text>
-          </View>
-
-          <View style={styles.bar}>
-            <View style={styles.leftspace} />
-            <View style={styles.tab}>
-              <Text>Controls in place</Text>
-            </View>
-            <View style={styles.rightspace} />
-          </View>
-
-          <View style={styles.section}>
-            <Text style={styles.sectionOne}>{pageBeingEdited.Controls}</Text>
-          </View>
-          <View style={styles.section}>
-            <Text style={styles.sectionOne}>
-              Last Review: {pageBeingEdited.LastRev}
-            </Text>
-            <Text> </Text>
-            <Text style={styles.sectionOne}>
-              Next Review: {pageBeingEdited.NextRev}
-            </Text>
-          </View>
+          )}
           <View
             style={styles.separator}
             lightColor="#eee"
@@ -128,7 +119,6 @@ const PageEditScreen = ({ navigation, route }) => {
           </View>
         </ScrollView>
       </View>
-      
     </SafeAreaView>
   );
 };
@@ -263,8 +253,4 @@ const styles = StyleSheet.create({
     justifyContent: "flex-start",
     alignItems: "flex-start",
   },
- 
-
-
-
 });

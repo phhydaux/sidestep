@@ -1,116 +1,13 @@
-import React, { useState, useContext, useRef } from "react";
+import React, { useContext } from "react";
 import { Pressable, StyleSheet, Text, View } from "react-native";
 
-import RiskLevelBadge from "./RiskLevelBadge";
 import { AuthenticatedUserContext } from "../navigators/AuthenticatedUserProvider";
 import RiskLevelDisplay from "./RiskLevelDisplay";
-import EditTitleModal from "../components/EditTitleModal";
-import EditElementModal from "./EditShortTextModal";
-import { createNativeWrapper } from "react-native-gesture-handler";
-import EditShortTextModal from "./EditShortTextModal";
-import EditListModal from "./EditListModal";
-import EditRiskMatrixModal from "./EditRiskMatrixModal";
 
-const PageEditIndexCard = ({ pageBeingEdited, setPageBeingEdited }) => {
+const PageEditIndexCard = ({ navigation }) => {
   const { userProfile, setUserProfile } = useContext(AuthenticatedUserContext);
-  const [shortText, setShortText] = useState();
-  const [editShortTextModalVisible, setEditShortTextModalVisible] =
-    useState(false);
-  const [editListModalVisible, setEditListModalVisible] = useState(false);
-  const [permittedValues, setPermittedValues] = useState();
-  const [selection, setSelection] = useState();
 
-  const [editRiskMatrixModalVisible, setEditRiskMatrixModalVisible] =
-    useState(false);
-  const [permittedLikeValues, setPermittedLikeValues] = useState();
-  const [permittedImpactValues, setPermittedImpactValues] = useState();
-  const [likeValue, setLikeValue] = useState();
-  const [impactValue, setImpactValue] = useState();
 
-  const handleElementBeingEdited = (pageElement) => {
-    //setElementBeingEdited(pageElement);
-    //elementBeingEdited.current = pageElement;
-    if (pageElement == "RiskMatrix") {
-      setPermittedLikeValues(
-        Object.keys(
-          userProfile.currentRegistryData["Meta"]["PageElements"]["Likelihood"][
-            "PermittedValues"
-          ]
-        )
-      );
-      setPermittedImpactValues(
-        Object.keys(
-          userProfile.currentRegistryData["Meta"]["PageElements"]["Impact"][
-            "PermittedValues"
-          ]
-        )
-      );
-      setLikeValue(pageBeingEdited["Likelihood"]);
-      setImpactValue(pageBeingEdited["Impact"]);
-      setEditRiskMatrixModalVisible(true);
-    } else {
-      switch (
-        userProfile.currentRegistryData["Meta"]["PageElements"][pageElement][
-          "Type"
-        ]
-      ) {
-        case "ShortText":
-          setUserProfile({
-            ...userProfile,
-            currentPageElement: pageElement,
-          });
-          setShortText(pageBeingEdited[pageElement]);
-          setEditShortTextModalVisible(true);
-          break;
-
-        case "TextBlock":
-          console.log("Text Block selected");
-          return (
-            <View>
-              <Text>Text Block placeholder</Text>
-            </View>
-          );
-          break;
-
-        case "Date":
-          console.log("Date selected");
-          return (
-            <View>
-              <Text>Date placeholder</Text>
-            </View>
-          );
-          break;
-
-        case "List":
-          setPermittedValues(
-            Object.keys(
-              userProfile.currentRegistryData["Meta"]["PageElements"][
-                pageElement
-              ]["PermittedValues"]
-            )
-          );
-
-          setUserProfile({
-            ...userProfile,
-            currentPageElement: pageElement,
-          });
-
-          setSelection(pageBeingEdited[pageElement]);
-          setEditListModalVisible(true);
-
-          break;
-
-        default:
-          console.log("Default selected");
-          alert("Screw up on editer selection");
-          return (
-            <View>
-              <Text>Default placeholder</Text>
-            </View>
-          );
-      }
-    }
-  };
 
   //Additional Index Card Items
   const cardLabel = [];
@@ -121,7 +18,7 @@ const PageEditIndexCard = ({ pageBeingEdited, setPageBeingEdited }) => {
         "Position" + index
       ];
 
-    if (label) {
+    if (label && userProfile.pageBeingEdited) {
       let prefix =
         userProfile.currentRegistryData["Meta"]["PageElements"][label][
           "TextBefore"
@@ -131,8 +28,8 @@ const PageEditIndexCard = ({ pageBeingEdited, setPageBeingEdited }) => {
         userProfile.currentRegistryData["Meta"]["PageElements"][label][
           "TextAfter"
         ] ?? "";
-
-      cardLabel[index] = prefix + pageBeingEdited[label] + postfix;
+       cardLabel[index] =
+        prefix + userProfile.pageBeingEdited[label] ?? "" + postfix;
       cardElement[index] = label;
     }
   }
@@ -142,18 +39,27 @@ const PageEditIndexCard = ({ pageBeingEdited, setPageBeingEdited }) => {
       <View style={styles.colleft}>
         <Pressable
           style={{ flex: 1 }}
-          onPress={() => handleElementBeingEdited("RiskMatrix")}
+          onPress={() =>
+            navigation.push("Edit Risk Matrix Screen", {
+              x_axis: "Likelihood",
+              y_axis: "Impact",
+            })
+          }
         >
           <RiskLevelDisplay
-            likelihood={pageBeingEdited["Likelihood"]}
-            impact={pageBeingEdited["Impact"]}
+            likelihood={userProfile.pageBeingEdited["Likelihood"]}
+            impact={userProfile.pageBeingEdited["Impact"]}
           />
         </Pressable>
 
         {cardLabel[1] && (
           <Pressable
             style={{ flex: 1 }}
-            onPress={() => handleElementBeingEdited(cardElement[1])}
+            onPress={() =>
+              navigation.push("Edit ShortText Screen", {
+                elementToEdit: cardElement[1],
+              })
+            }
           >
             <Text style={styles.label}>{cardLabel[1]}</Text>
           </Pressable>
@@ -162,7 +68,11 @@ const PageEditIndexCard = ({ pageBeingEdited, setPageBeingEdited }) => {
         {cardLabel[2] && (
           <Pressable
             style={{ flex: 1 }}
-            onPress={() => handleElementBeingEdited(cardElement[2])}
+            onPress={() =>
+              navigation.push("Edit ShortText Screen", {
+                elementToEdit: cardElement[2],
+              })
+            }
           >
             <Text style={styles.label}>{cardLabel[2]}</Text>
           </Pressable>
@@ -172,75 +82,35 @@ const PageEditIndexCard = ({ pageBeingEdited, setPageBeingEdited }) => {
       <View style={styles.colright}>
         <Pressable
           style={{ flex: 1 }}
-          onPress={() => handleElementBeingEdited("Title")}
+          onPress={() =>
+            navigation.push("Edit ShortText Screen", {
+              elementToEdit: "Title",
+            })
+          }
         >
-          <Text style={styles.title}>{pageBeingEdited["Title"]}</Text>
+          <Text style={styles.title}>{userProfile.pageBeingEdited["Title"] ?? ""}</Text>
         </Pressable>
         <Pressable
           style={{ flex: 1 }}
-          onPress={() => handleElementBeingEdited(cardElement[3])}
+          onPress={() =>
+            navigation.push("Edit ShortText Screen", {
+              elementToEdit: cardElement[3],
+            })
+          }
         >
           {cardLabel[3] && <Text style={styles.label}>{cardLabel[3]}</Text>}
         </Pressable>
         <Pressable
           style={{ flex: 1 }}
-          onPress={() => handleElementBeingEdited(cardElement[4])}
+          onPress={() =>
+            navigation.push("Edit ShortText Screen", {
+              elementToEdit: cardElement[4],
+                          })
+          }
         >
           {cardLabel[4] && <Text style={styles.label}>{cardLabel[4]}</Text>}
         </Pressable>
       </View>
-      {/* <EditTitleModal
-        editTitleModalVisible={editTitleModalVisible}
-        setEditTitleModalVisible={setEditTitleModalVisible}
-        pageBeingEdited={pageBeingEdited}
-        setPageBeingEdited={setPageBeingEdited}
-      /> */}
-      <EditShortTextModal
-        editShortTextModalVisible={editShortTextModalVisible}
-        setEditShortTextModalVisible={setEditShortTextModalVisible}
-        pageBeingEdited={pageBeingEdited}
-        setPageBeingEdited={setPageBeingEdited}
-        shortText={shortText}
-        setShortText={setShortText}
-      />
-      {/*  <EditTextBlockModal
-        editElementModalVisible={editElementModalVisible}
-        setEditElementModalVisible={() => setEditElementModalVisible()}
-        pageBeingEdited={pageBeingEdited}
-        setPageBeingEdited={() => setPageBeingEdited()}
-        elementBeingEdited={elementBeingEdited}
-      />
-      <EditDateModal
-        editElementModalVisible={editElementModalVisible}
-        setEditElementModalVisible={() => setEditElementModalVisible()}
-        pageBeingEdited={pageBeingEdited}
-        setPageBeingEdited={() => setPageBeingEdited()}
-        elementBeingEdited={elementBeingEdited}
-      />*/}
-      <EditListModal
-        editListModalVisible={editListModalVisible}
-        setEditListModalVisible={setEditListModalVisible}
-        pageBeingEdited={pageBeingEdited}
-        setPageBeingEdited={setPageBeingEdited}
-        permittedValues={permittedValues}
-        setPermittedValues={setPermittedValues}
-        selection={selection}
-        setSelection={setSelection}
-      />
-      <EditRiskMatrixModal
-        editRiskMatrixModalVisible={editRiskMatrixModalVisible}
-        setEditRiskMatrixModalVisible={setEditRiskMatrixModalVisible}
-        pageBeingEdited={pageBeingEdited}
-        setPageBeingEdited={setPageBeingEdited}
-        permittedLikeValues={permittedLikeValues}
-        setPermittedLikeValues={setPermittedLikeValues}
-        permittedImpactValues={permittedImpactValues}
-        setPermittedImpactValues={setPermittedImpactValues}
-        likeValue={likeValue}
-        setLikeValue={setLikeValue}
-        impactValue={impactValue}
-        setImpactValue={setImpactValue}
-      />
     </View>
   );
 };

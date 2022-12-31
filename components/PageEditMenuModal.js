@@ -5,40 +5,34 @@ import { ref, push, set } from "firebase/database";
 import { database } from "../firebaseConfig";
 import { AuthenticatedUserContext } from "../navigators/AuthenticatedUserProvider";
 
-
-
 const PageEditMenuModal = ({
   pageEditMenuModalVisible,
   setPageEditMenuModalVisible,
   displayedEntry,
   navigation,
-  displayOrder
-  
+  displayOrder,
 }) => {
   const { userProfile, setUserProfile } = useContext(AuthenticatedUserContext);
 
   const handleAddEntry = () => {
-
     // database is database
     // Registry is at database/currentRegistryID
     let newEntryRef = push(
-      ref(database, 
-        "Registries/"+userProfile.currentRegistryID+"/Pages"));
-set(newEntryRef,{Title: "Fred3"});
+      ref(database, "Registries/" + userProfile.currentRegistryID + "/Pages")
+    );
+    set(newEntryRef, { Title: "Fred3" });
     newEntryRef = push(
-      ref(database, 
-        "Registries/"+userProfile.currentRegistryID+"/Pages"));
-set(newEntryRef,{Title: "Fred4"});
-
-
-  }
+      ref(database, "Registries/" + userProfile.currentRegistryID + "/Pages")
+    );
+    set(newEntryRef, { Title: "Fred4" });
+  };
 
   const handleEditPage = () => {
+   
     setPageEditMenuModalVisible(false);
-    navigation.navigate("Page Edit");
     
-
-  }
+    navigation.navigate("Page Edit");
+  };
 
   return (
     <Modal
@@ -74,43 +68,39 @@ set(newEntryRef,{Title: "Fred4"});
               borderRadius: 20,
             }}
           >
-            <View style={{ flex: 1, flexDirection: "column", padding: 10, }}>
-        
-
-        <Pressable onPress={() => {handleEditPage()}}>
-          <View style={{ flexDirection: "row" , padding: 10,}}>
-            <Ionicons name="create-outline" size={25} color="black" />
-            <Text>Edit this Risk</Text>
-          </View>
-        </Pressable>
-        <Pressable onPress={() => {}}>
-          <View style={{ flexDirection: "row", padding: 10, }}>
-            <Ionicons name="trash-outline" size={25} color="black" />
-            <Text>Delete this Risk</Text>
-          </View>
-        </Pressable>
-        <Pressable onPress={() => {handleAddEntry()}}>
-          <View style={{ flexDirection: "row" , padding: 10,}}>
-            <Ionicons name="add-circle-outline" size={25} color="black" />
-            <Text>Add a new Risk</Text>
-          </View>
-        </Pressable>
-        <Pressable onPress={() => {}}>
-          <View style={{ flexDirection: "row", padding: 10, }}>
-            <Ionicons name="archive-outline" size={25} color="black" />
-            <Text>Archive this Risk</Text>
-          </View>
-        </Pressable>
-            
-
-              
-           
-          
-              
-
-
-
-              
+            <View style={{ flex: 1, flexDirection: "column", padding: 10 }}>
+              <Pressable
+                onPress={() => {
+                  handleEditPage();
+                }}
+              >
+                <View style={{ flexDirection: "row", padding: 10 }}>
+                  <Ionicons name="create-outline" size={25} color="black" />
+                  <Text>Edit this Risk</Text>
+                </View>
+              </Pressable>
+              <Pressable onPress={() => {}}>
+                <View style={{ flexDirection: "row", padding: 10 }}>
+                  <Ionicons name="trash-outline" size={25} color="black" />
+                  <Text>Delete this Risk</Text>
+                </View>
+              </Pressable>
+              <Pressable
+                onPress={() => {
+                  handleAddEntry();
+                }}
+              >
+                <View style={{ flexDirection: "row", padding: 10 }}>
+                  <Ionicons name="add-circle-outline" size={25} color="black" />
+                  <Text>Add a new Risk</Text>
+                </View>
+              </Pressable>
+              <Pressable onPress={() => {}}>
+                <View style={{ flexDirection: "row", padding: 10 }}>
+                  <Ionicons name="archive-outline" size={25} color="black" />
+                  <Text>Archive this Risk</Text>
+                </View>
+              </Pressable>
             </View>
           </View>
         </View>
@@ -125,6 +115,5 @@ const styles = StyleSheet.create({
   paragraph: {},
   option: {
     padding: 10,
-
   },
 });

@@ -2,24 +2,20 @@ import "react-native-gesture-handler";
 import * as React from "react";
 import { Ionicons } from "@expo/vector-icons";
 
-
 import { StyleSheet, Text, View } from "react-native";
-import {
-  CardStyleInterpolators,
-} from "@react-navigation/stack";
+import { CardStyleInterpolators } from "@react-navigation/stack";
 import { createStackNavigator } from "@react-navigation/stack";
-
 
 import EntryListScreen from "../screens/EntryListScreen";
 import EntryDetailScreen from "../screens/EntryDetailScreen";
 import MyHomeScreen from "../screens/MyHomeScreen";
 import PageEditScreen from "../screens/PageEditScreen";
+import EditShortTextScreen from "../screens/EditShortTextScreen";
+import EditTextBlockScreen from "../screens/EditTextBlockScreen";
 
 const Stack = createStackNavigator();
 
 export default function EntryStackNavigator() {
-
-  
   return (
     <Stack.Navigator initialRouteName="Home">
       <Stack.Screen
@@ -37,9 +33,23 @@ export default function EntryStackNavigator() {
           headerShown: false,
         }}
       />
-       <Stack.Screen
+      <Stack.Screen
         name="Page Edit"
         component={PageEditScreen}
+        options={{
+          headerShown: false,
+        }}
+      />
+      <Stack.Screen
+        name="Edit ShortText Screen"
+        component={EditShortTextScreen}
+        options={{
+          headerShown: false,
+        }}
+      />
+       <Stack.Screen
+        name="Edit TextBlock Screen"
+        component={EditTextBlockScreen}
         options={{
           headerShown: false,
         }}
@@ -49,14 +59,15 @@ export default function EntryStackNavigator() {
         name="Entry Detail"
         component={EntryDetailScreen}
         options={({ navigation }) => ({
-          headerLeft: () => (<View>
-            <Ionicons
-              name="chevron-back-sharp"
-              size={24}
-              color="black"
-              onPress={() => navigation.pop()}
-            />
-            <Text>Back</Text>
+          headerLeft: () => (
+            <View>
+              <Ionicons
+                name="chevron-back-sharp"
+                size={24}
+                color="black"
+                onPress={() => navigation.pop()}
+              />
+              <Text>Back</Text>
             </View>
           ),
           cardStyleInterpolator: CardStyleInterpolators.forHorizontalIOS,
