@@ -12,6 +12,9 @@ import MyHomeScreen from "../screens/MyHomeScreen";
 import PageEditScreen from "../screens/PageEditScreen";
 import EditShortTextScreen from "../screens/EditShortTextScreen";
 import EditTextBlockScreen from "../screens/EditTextBlockScreen";
+import EditDateScreen from "../screens/EditDateScreen";
+import EditListScreen from "../screens/EditListScreen";
+import EditRiskMatrixScreen from "../screens/EditRiskMatrixScreen";
 
 const Stack = createStackNavigator();
 
@@ -50,6 +53,27 @@ export default function EntryStackNavigator() {
        <Stack.Screen
         name="Edit TextBlock Screen"
         component={EditTextBlockScreen}
+        options={{
+          headerShown: false,
+        }}
+      />
+       <Stack.Screen
+        name="Edit Date Screen"
+        component={EditDateScreen}
+        options={{
+          headerShown: false,
+        }}
+      />
+       <Stack.Screen
+        name="Edit List Screen"
+        component={EditListScreen}
+        options={{
+          headerShown: false,
+        }}
+      />
+       <Stack.Screen
+        name="Edit Risk Matrix Screen"
+        component={EditRiskMatrixScreen}
         options={{
           headerShown: false,
         }}

@@ -1,4 +1,3 @@
-import { browserLocalPersistence } from "firebase/auth";
 import React, { useState, useContext, useEffect } from "react";
 import { Ionicons } from "@expo/vector-icons";
 import {
@@ -11,42 +10,45 @@ import {
   Button,
 } from "react-native";
 import { AuthenticatedUserContext } from "../navigators/AuthenticatedUserProvider";
+import { SafeAreaView } from "react-native-safe-area-context";
+import RiskLevelDisplay from "../components/RiskLevelDisplay";
 
-const EditRiskMatrixModal = ({
-  editRiskMatrixModalVisible,
-  setEditRiskMatrixModalVisible,
-  pageBeingEdited,
-  setPageBeingEdited,
-  permittedLikeValues,
-  setPermittedLikeValues,
-  permittedImpactValues,
-  setPermittedImpactValues,
-  likeValue,
-  setLikeValue,
-  impactValue,
-  setImpactValue
-}) => {
+const EditRiskMatrixScreen = ({ navigation, route }) => {
   const { userProfile, setUserProfile } = useContext(AuthenticatedUserContext);
 
+  const elementToEdit = route.params.elementToEdit;
+  const [impactValue, setImpactValue] = useState(
+    userProfile.pageBeingEdited["Impact"]
+  );
+  const [likeValue, setLikeValue] = useState(
+    userProfile.pageBeingEdited["Likelihood"]
+  );
+  const permittedLikeValues = Object.keys(
+    userProfile.currentRegistryData["Meta"]["PageElements"]["Likelihood"][
+      "PermittedValues"
+    ]
+  );
+  const permittedImpactValues = Object.keys(
+    userProfile.currentRegistryData["Meta"]["PageElements"]["Impact"][
+      "PermittedValues"
+    ]
+  );
+
   const saveToStaging = () => {
-    setPageBeingEdited({
-      ...pageBeingEdited,
-      Likelihood: likeValue,
-      Impact: impactValue,
+    const copyOfPage = JSON.parse(JSON.stringify(userProfile.pageBeingEdited));
+    copyOfPage["Likelihood"] = likeValue;
+    copyOfPage["impactValue"] = impactValue;
+
+    setUserProfile({
+      ...userProfile,
+      pageBeingEdited: { ...copyOfPage },
     });
-    setEditRiskMatrixModalVisible(false);
+
+    navigation.goBack();
   };
 
   return (
-    <Modal
-      animationType="slide"
-      transparent={false}
-      visible={editRiskMatrixModalVisible}
-      presentationStyle="formSheet"
-      onRequestClose={() => {
-        setEditRiskMatrixModalVisible(!editRiskMatrixModalVisible);
-      }}
-    >
+    <SafeAreaView style={{ flex: 1 }}>
       <View
         style={{
           flexDirection: "row",
@@ -58,7 +60,7 @@ const EditRiskMatrixModal = ({
       >
         <Pressable
           onPress={() => {
-            setEditRiskMatrixModalVisible(!editRiskMatrixModalVisible);
+            navigation.goBack();
           }}
         >
           <Text
@@ -85,63 +87,73 @@ const EditRiskMatrixModal = ({
           </Text>
         </Pressable>
       </View>
-      <View style={{ flexDirection: "row" }}>
-        <Text></Text>
-        <Text style={{ fontWeight: "bold", fontSize: 15 }}></Text>
-      </View>
+     
 
       <View
         style={{
-          flex: 1,
-          alignItems: "flex-start",
-          justifyContent: "flex-start",
-          backgroundColor: "#cdcdcd",
+          flex: 0,
+          flexDirection: "column",
+         justifyContent: "center",
+          
+          backgroundColor: "#bdcdcd",
           paddingLeft: 25,
           paddingTop: 30,
         }}
       >
+      <RiskLevelDisplay
+      likelihood={likeValue}
+      impact={impactValue} />
+      <Text></Text>
+      
         {/* This is the selection area */}
 
         <Text style={styles.heading}>Likelihood</Text>
 
         {permittedLikeValues?.length &&
           permittedLikeValues.map((likelihoodoption) => (
-            <Pressable flexDirection="row" alignItems="center" 
+            <Pressable
+              flexDirection="row"
+              alignItems="center"
               onPress={() => {
                 setLikeValue(likelihoodoption);
               }}
               key={likelihoodoption}
             >
-             
-              {likelihoodoption == likeValue?   <Ionicons name="radio-button-on-outline" size={25} /> : <Ionicons name="radio-button-off-outline" size={25} />}
+              {likelihoodoption == likeValue ? (
+                <Ionicons name="radio-button-on-outline" size={25} />
+              ) : (
+                <Ionicons name="radio-button-off-outline" size={25} />
+              )}
               <Text style={styles.options}>{likelihoodoption}</Text>
             </Pressable>
           ))}
 
+        <Text style={styles.heading}>Impact</Text>
 
-          <Text style={styles.heading}>Impact</Text>
-
-          {permittedImpactValues?.length &&
+        {permittedImpactValues?.length &&
           permittedImpactValues.map((impactOption) => (
-            <Pressable flexDirection="row" alignItems="center" 
+            <Pressable
+              flexDirection="row"
+              alignItems="center"
               onPress={() => {
                 setImpactValue(impactOption);
               }}
               key={impactOption}
             >
-             
-              {impactValue == impactOption?   <Ionicons name="radio-button-on-outline" size={25} /> : <Ionicons name="radio-button-off-outline" size={25} />}
+              {impactValue == impactOption ? (
+                <Ionicons name="radio-button-on-outline" size={25} />
+              ) : (
+                <Ionicons name="radio-button-off-outline" size={25} />
+              )}
               <Text style={styles.options}>{impactOption}</Text>
             </Pressable>
           ))}
-
-
       </View>
-    </Modal>
+    </SafeAreaView>
   );
 };
 
-export default EditRiskMatrixModal;
+export default EditRiskMatrixScreen;
 
 const styles = StyleSheet.create({
   paragraph: {},
@@ -157,9 +169,8 @@ const styles = StyleSheet.create({
     padding: 10,
   },
   heading: {
-fontSize: 15,
-fontWeight: "bold",
-
+    fontSize: 15,
+    fontWeight: "bold",
+    paddingTop: 30,
   },
-
 });

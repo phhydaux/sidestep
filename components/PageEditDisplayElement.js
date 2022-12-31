@@ -46,6 +46,7 @@ const PageEditDisplayElement = ({ currentElement, navigation }) => {
 
       break;
     case "ShortText":
+      console.log("Short Text processing");
       prefix =
         userProfile.currentRegistryData["Meta"]["PageElements"][currentElement][
           "TextBefore"
@@ -85,10 +86,10 @@ const PageEditDisplayElement = ({ currentElement, navigation }) => {
       return (
         <Pressable
           style={styles.section}
-          onPress={() =>
+          onPress={() =>{
             navigation.push("Edit Date Screen", {
               elementToEdit: currentElement,
-            })
+            })}
           }
         >
           <Text style={styles.sectionOne}>
@@ -98,6 +99,7 @@ const PageEditDisplayElement = ({ currentElement, navigation }) => {
       );
       break;
     case "List":
+      console.log("List processing");
       prefix =
         userProfile.currentRegistryData["Meta"]["PageElements"][currentElement][
           "TextBefore"

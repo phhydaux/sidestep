@@ -11,37 +11,35 @@ import {
   Button,
 } from "react-native";
 import { AuthenticatedUserContext } from "../navigators/AuthenticatedUserProvider";
+import { SafeAreaView } from "react-native-safe-area-context";
 
-const EditListModal = ({
-  editListModalVisible,
-  setEditListModalVisible,
-  pageBeingEdited,
-  setPageBeingEdited,
-  permittedValues,
-  setPermittedValues,
-  selection,
-  setSelection,
-}) => {
+const EditListScreen = ({ navigation, route }) => {
   const { userProfile, setUserProfile } = useContext(AuthenticatedUserContext);
 
+  const elementToEdit = route.params.elementToEdit;
+  const [selection, setSelection] = useState(
+    userProfile.pageBeingEdited[elementToEdit]
+  );
+  const permittedValues = Object.keys(
+    userProfile.currentRegistryData["Meta"]["PageElements"][elementToEdit][
+      "PermittedValues"
+    ]
+  );
+
   const saveToStaging = () => {
-    setPageBeingEdited({
-      ...pageBeingEdited,
-      [userProfile.currentPageElement]: selection,
+    const copyOfPage = JSON.parse(JSON.stringify(userProfile.pageBeingEdited));
+    copyOfPage[elementToEdit] = selection;
+
+    setUserProfile({
+      ...userProfile,
+      pageBeingEdited: { ...copyOfPage },
     });
-    setEditListModalVisible(false);
+
+    navigation.goBack();
   };
 
   return (
-    <Modal
-      animationType="slide"
-      transparent={false}
-      visible={editListModalVisible}
-      presentationStyle="formSheet"
-      onRequestClose={() => {
-        setEditListModalVisible(!editListModalVisible);
-      }}
-    >
+    <SafeAreaView style={{ flex: 1 }}>
       <View
         style={{
           flexDirection: "row",
@@ -53,7 +51,7 @@ const EditListModal = ({
       >
         <Pressable
           onPress={() => {
-            setEditListModalVisible(!editListModalVisible);
+            navigation.goBack();
           }}
         >
           <Text
@@ -98,23 +96,28 @@ const EditListModal = ({
 
         {permittedValues?.length &&
           permittedValues.map((option, optionIndex) => (
-            <Pressable flexDirection="row" alignItems="center" 
+            <Pressable
+              flexDirection="row"
+              alignItems="center"
               onPress={() => {
                 setSelection(option);
               }}
               key={option}
             >
-             
-              {option == selection?   <Ionicons name="radio-button-on-outline" size={25} /> : <Ionicons name="radio-button-off-outline" size={25} />}
+              {option == selection ? (
+                <Ionicons name="radio-button-on-outline" size={25} />
+              ) : (
+                <Ionicons name="radio-button-off-outline" size={25} />
+              )}
               <Text style={styles.options}>{option}</Text>
             </Pressable>
           ))}
       </View>
-    </Modal>
+    </SafeAreaView>
   );
 };
 
-export default EditListModal;
+export default EditListScreen;
 
 const styles = StyleSheet.create({
   paragraph: {},

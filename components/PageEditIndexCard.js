@@ -34,6 +34,26 @@ const PageEditIndexCard = ({ navigation }) => {
     }
   }
 
+
+  const handleSelection = (elementToEdit) => {
+switch (userProfile.currentRegistryData["Meta"]["PageElements"][elementToEdit]["Type"]) {
+  case "ShortText":
+    navigation.push("Edit ShortText Screen", {
+      elementToEdit: elementToEdit})
+    
+    break;
+    case "List":
+      navigation.push("Edit List Screen", {
+        elementToEdit: elementToEdit})
+    break;
+
+  default:
+    alert("Screw-up!")
+    break;
+}
+
+  }
+
   return (
     <View style={styles.card}>
       <View style={styles.colleft}>
@@ -55,11 +75,7 @@ const PageEditIndexCard = ({ navigation }) => {
         {cardLabel[1] && (
           <Pressable
             style={{ flex: 1 }}
-            onPress={() =>
-              navigation.push("Edit ShortText Screen", {
-                elementToEdit: cardElement[1],
-              })
-            }
+            onPress={() => handleSelection(cardElement[1])}
           >
             <Text style={styles.label}>{cardLabel[1]}</Text>
           </Pressable>
@@ -68,11 +84,7 @@ const PageEditIndexCard = ({ navigation }) => {
         {cardLabel[2] && (
           <Pressable
             style={{ flex: 1 }}
-            onPress={() =>
-              navigation.push("Edit ShortText Screen", {
-                elementToEdit: cardElement[2],
-              })
-            }
+            onPress={() => handleSelection(cardElement[2])}
           >
             <Text style={styles.label}>{cardLabel[2]}</Text>
           </Pressable>
@@ -92,21 +104,13 @@ const PageEditIndexCard = ({ navigation }) => {
         </Pressable>
         <Pressable
           style={{ flex: 1 }}
-          onPress={() =>
-            navigation.push("Edit ShortText Screen", {
-              elementToEdit: cardElement[3],
-            })
-          }
+          onPress={() => handleSelection(cardElement[3])}
         >
           {cardLabel[3] && <Text style={styles.label}>{cardLabel[3]}</Text>}
         </Pressable>
         <Pressable
           style={{ flex: 1 }}
-          onPress={() =>
-            navigation.push("Edit ShortText Screen", {
-              elementToEdit: cardElement[4],
-                          })
-          }
+          onPress={() => handleSelection(cardElement[4])}
         >
           {cardLabel[4] && <Text style={styles.label}>{cardLabel[4]}</Text>}
         </Pressable>
