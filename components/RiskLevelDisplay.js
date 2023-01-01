@@ -3,36 +3,33 @@ import { View, Text, StyleSheet, SafeAreaView } from "react-native";
 
 import { AuthenticatedUserContext } from "../navigators/AuthenticatedUserProvider";
 
-const RiskLevelDisplay = ({ likelihood, impact}) => {
+const RiskLevelDisplay = ({ likelihood, impact }) => {
   const { userProfile, setUserProfile } = useContext(AuthenticatedUserContext);
-
-  
 
   //const thisLikelihood = currentEntry["Likelihood"];
   //const thisImpact = currentEntry["Impact"];
+var boxLegend = "undefined";
+var boxColor = "wheat";
 
+ if ( likelihood && impact) {
+   boxLegend =
+    userProfile.currentRegistryData["Meta"]["RiskMatrix"][likelihood][impact] ??
+    "undefined";
 
- const boxLegend =
-    userProfile.currentRegistryData["Meta"]["RiskMatrix"][likelihood][
-        impact
-    ];
- 
-  const boxColor =
-    userProfile.currentRegistryData["Meta"]["RiskColors"][likelihood][
-        impact
-    ];
- 
-
+   boxColor =
+    userProfile.currentRegistryData["Meta"]["RiskColors"][likelihood][impact] ??
+    "wheat";
+}
   return (
     <View style={styles.bar}>
-      <View style={[styles.box, {backgroundColor: boxColor}]}>
+      <View style={[styles.box, { backgroundColor: boxColor }]}>
         <Text style={styles.boxtext}>{boxLegend}</Text>
       </View>
     </View>
   );
 };
 
-export default RiskLevelDisplay
+export default RiskLevelDisplay;
 
 const styles = StyleSheet.create({
   bar: {
@@ -42,8 +39,6 @@ const styles = StyleSheet.create({
     paddingTop: 5,
     paddingLeft: 5,
     paddingRight: 5,
-    
-   
   },
   box: {
     height: 30,

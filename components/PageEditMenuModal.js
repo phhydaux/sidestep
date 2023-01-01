@@ -1,7 +1,7 @@
 import React, { useState, useContext } from "react";
 import { Modal, StyleSheet, Text, View, Pressable } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
-import { ref, push, set } from "firebase/database";
+import { ref, push, set, remove } from "firebase/database";
 import { database } from "../firebaseConfig";
 import { AuthenticatedUserContext } from "../navigators/AuthenticatedUserProvider";
 
@@ -20,19 +20,25 @@ const PageEditMenuModal = ({
     let newEntryRef = push(
       ref(database, "Registries/" + userProfile.currentRegistryID + "/Pages")
     );
-    set(newEntryRef, { Title: "Fred3" });
-    newEntryRef = push(
-      ref(database, "Registries/" + userProfile.currentRegistryID + "/Pages")
-    );
-    set(newEntryRef, { Title: "Fred4" });
+    set(newEntryRef, { Title: "new page" });
+    
   };
 
   const handleEditPage = () => {
-   
     setPageEditMenuModalVisible(false);
-    
     navigation.navigate("Page Edit");
   };
+
+  const handleDeletePage = () => {
+    let EntryRef =
+      ref(database, "Registries/" + userProfile.currentRegistryID + "/Pages/" + userProfile.currentPage);
+      
+      remove(EntryRef);
+      setPageEditMenuModalVisible(false);
+      //navigation.goBack();
+    ;
+
+  }
 
   return (
     <Modal
@@ -79,7 +85,7 @@ const PageEditMenuModal = ({
                   <Text>Edit this Risk</Text>
                 </View>
               </Pressable>
-              <Pressable onPress={() => {}}>
+              <Pressable onPress={() => {handleDeletePage()}}>
                 <View style={{ flexDirection: "row", padding: 10 }}>
                   <Ionicons name="trash-outline" size={25} color="black" />
                   <Text>Delete this Risk</Text>

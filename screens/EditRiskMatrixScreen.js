@@ -37,8 +37,8 @@ const EditRiskMatrixScreen = ({ navigation, route }) => {
   const saveToStaging = () => {
     const copyOfPage = JSON.parse(JSON.stringify(userProfile.pageBeingEdited));
     copyOfPage["Likelihood"] = likeValue;
-    copyOfPage["impactValue"] = impactValue;
-
+    copyOfPage["Impact"] = impactValue;
+console.log(copyOfPage);
     setUserProfile({
       ...userProfile,
       pageBeingEdited: { ...copyOfPage },
